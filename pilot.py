@@ -39,6 +39,15 @@ def menu():
                 byebye()
 
 
+def get_user_props():
+    """
+    Returns the maximum range and passenger capacity of all planes owned by the
+    player
+    """
+    pass
+    #return (max_range, capacity)
+
+
 def game_menu():
     """
     Display the game level information, include:
@@ -51,7 +60,8 @@ def game_menu():
     (Game Menu: 1. Plane1, 2. Plane2, 3. Plane3, ..., R. Refresh, Q. Go Back)
     """
     while True:
-        quantity, departure, destination, quotation = game_level_display()
+        max_range, capacity = get_user_props()
+        game_props = game_level_display()
 
         number = input(
             "Please choose the plane number to "
@@ -65,18 +75,18 @@ def game_menu():
 
         else:
             # Start game
-            game_play(quantity, departure, destination, quotation)
+            game_play(max_range, capacity, *game_props)
 
 
-def game_level_display():
+def game_level_display(max_range, capacity):
     """
     Display a teaching game for the new user, or a random game.
     """
     pass
-    #return (quantity, departure, destination, quotation)
+    #return (quantity, departure, destination, quotation, weather, temperature)
 
 
-def game_play(quantity, departure, destination, quotation):
+def game_play(max_range, capacity, quantity, departure, destination, quotation, weather, temperature):
     """
     Play the game, include:
         - Calculate the carbon emission,
@@ -103,6 +113,8 @@ def store_menu():
         - An ascii picture,
         - Name,
         - Description,
+        - Maximum range
+        - Carrying capacity
         - Price,
         - Carbon emission coefficient.
 
@@ -118,6 +130,8 @@ def gallery_menu():
         - An ascii picture,
         - Name,
         - Description,
+        - Maximum range
+        - Carrying capacity
         - Price,
         - Carbon emission coefficient.
 
