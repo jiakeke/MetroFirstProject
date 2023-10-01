@@ -1,6 +1,6 @@
 """%(program)s:  Pilot Game Center
 
-usage:  %(program)s command
+usage:  python %(program)s command
 
 Common Commands:
 
@@ -15,9 +15,13 @@ import sys
 program = os.path.basename(sys.argv[0])
 
 db_name = 'pilot'
-db_user = 'gary'
-db_pass = 'mypass'
+db_user = ''
+db_pass = ''
 db_host = 'localhost'
+
+# set the db related variables in config.py
+if os.path.exists('config.py'):
+    from config import *
 
 
 def login_or_register():
