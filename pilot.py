@@ -1,3 +1,23 @@
+"""%(program)s:  Pilot Game Center
+
+usage:  %(program)s command
+
+Common Commands:
+
+    help          -- print this help text
+    play          -- play the game
+    initdb        -- database initialization
+"""
+
+import os
+import sys
+
+program = os.path.basename(sys.argv[0])
+
+db_name = 'pilot'
+db_user = 'gary'
+db_pass = 'mypass'
+db_host = 'localhost'
 
 
 def login_or_register():
@@ -20,23 +40,22 @@ def menu():
     (Menu: 1. Game, 2. Store, 3. Gallery, 4. Ranking, 5. Quit)
     """
     # Show the menu here
+    menus = {
+        '1': {'name': 'Game', 'method': game_menu},
+        '2': {'name': 'Store', 'method': store_menu},
+        '3': {'name': 'Gallery', 'method': gallery_menu},
+        '4': {'name': 'Ranking', 'method': ranking_menu},
+        '5': {'name': 'Quit', 'method': byebye},
+    }
 
     while True:
         number = input(
             "Please choose the number in the menu to enter the corresponding "
             "section."
         )
-        match number:
-            case "1"
-                game_menu()
-            case "2"
-                store_menu()
-            case "3"
-                gallery_menu()
-            case "4"
-                ranking_menu()
-            case "5"
-                byebye()
+        if number in menus:
+            method = menus[number]['method']
+            method()
 
 
 def get_user_props():
@@ -163,15 +182,48 @@ def byebye():
     pass
 
 
-def main():
+def play():
+    #Set username as a global variable and do not modify it.
+    global username
     username = login_or_register()
     if username:
-        #Set username as a global variable and do not modify it.
-        global username
         menu()
     else:
         byebye()
 
+def run_command(cmd):
+    os.system(cmd)
+
+def main():
+    if len(sys.argv) == 1:
+        usage()
+        sys.exit(0)
+    cmd = sys.argv[1]
+    if cmd in cmds_map:
+        method = cmds_map[cmd]
+        method()
+    else:
+        usage()
+        sys.exit(0)
+
+def usage():
+    print(__doc__ % {"program": program})
+
+
+def initdb():
+    run_command(f'mysql -u {db_user} -p{db_pass} -e "DROP DATABASE {db_name}"')
+    run_command(f'mysql -u {db_user} -p{db_pass} -e "CREATE DATABASE {db_name}"')
+    run_command(f'mysql -u {db_user} -p{db_pass} {db_name} < database.sql')
+    run_command(f'mysql -u {db_user} -p{db_pass} {db_name} < update.sql')
+
+
+cmds_map = {
+    'help': usage,
+    'initdb': initdb,
+    'play': play,
+}
+
 
 if __name__ == "__main__":
     main()
+
