@@ -4,11 +4,11 @@ drop table goal_reached;
 drop table game;
 
 create table user(
-id int not null auto_increment,
-name varchar(40),
-password varchar(40),
-status boolean default true,
-primary key (id)
+    id int not null auto_increment,
+    name varchar(40),
+    password varchar(40),
+    status boolean default true,
+    primary key (id)
 );
 
 create table aircraft(
