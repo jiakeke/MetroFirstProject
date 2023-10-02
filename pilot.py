@@ -37,55 +37,6 @@ def get_database_connection():
     return connection
 
 
-def register_user():
-    connection = get_database_connection()
-    cursor = connection.cursor()
-
-    while True:
-        username = input("Enter your desired username: ")
-        password = input("Enter your password: ")
-
-        # Check if the username already exists
-        cursor.execute("SELECT id FROM user WHERE name = %s", (username,))
-        if cursor.fetchone():
-            print("This username is already taken. Please choose another one.")
-        else:
-            # Insert the new user
-            cursor.execute("INSERT INTO user (name, password) VALUES (%s, %s)", (username, password))
-
-            # Get the id of the newly registered user
-            user_id = cursor.lastrowid
-
-            # Assign the aircraft with id=1 to the user
-            cursor.execute("INSERT INTO user_aircrafts (user_id, aircraft_id) VALUES (%s, 1)", (user_id,))
-
-            connection.commit()
-            print(f"User {username} registered successfully!")
-            break
-
-    cursor.close()
-    connection.close()
-
-
-def login_user():
-    connection = get_database_connection()
-    cursor = connection.cursor()
-
-    while True:
-        username = input("Enter your username: ")
-        password = input("Enter your password: ")
-
-        cursor.execute("SELECT id FROM user WHERE name = %s AND password = %s", (username, password))
-        user = cursor.fetchone()
-        if user:
-            print(f"Welcome back, {username}!")
-            cursor.close()
-            connection.close()
-            return user[0]
-        else:
-            print("Invalid username or password. Please try again.")
-
-
 def login_or_register():
     """
     The login or registration page is displayed until the login is successful.
@@ -97,18 +48,31 @@ def login_or_register():
 
     Return the username after logging in.
     """
+    connection = get_database_connection()
+    cursor = connection.cursor()
+
     while True:
-        choice = input("\nDo you want to [R]egister or [L]ogin? (R/L): ").upper()
-        if choice == 'R':
-            register_user()
-            break
-        elif choice == 'L':
-            user_id = login_user()
-            if user_id:
-                return user_id
-            break
+        username = input("Enter username: ")
+        password = input("Enter password: ")
+
+        cursor.execute(f"SELECT password FROM user WHERE name = {username}")
+        result = cursor.fetchone()
+
+        if result:
+            if result[0] == password:
+                print(f"Login successful!\nWelcome {username}!")
+                cursor.close()
+                connection.close()
+                return username
+            else:
+                print("Incorrect password. Please try again.")
         else:
-            print("Invalid choice. Please choose R for Register or L for Login.")
+            cursor.execute(f"INSERT INTO user (name, password, status) VALUES ('{username}', {password}, true)")
+            cursor.execute(f"INSERT INTO user_aircraft (user_id, aircraft_id) SELECT id, 1 FROM user WHERE name = '{username}'")
+            print(f"User registered and login successful!\nWelcome {username}!")
+            cursor.close()
+            connection.close()
+            return username
 
 
 def menu():
