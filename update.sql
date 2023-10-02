@@ -7,6 +7,7 @@ create table user(
 id int not null auto_increment,
 name varchar(40),
 password varchar(40),
+status boolean default true,
 primary key (id)
 );
 
