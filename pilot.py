@@ -60,7 +60,7 @@ def register_user():
             cursor.execute("INSERT INTO user_aircrafts (user_id, aircraft_id) VALUES (%s, 1)", (user_id,))
 
             connection.commit()
-            print(f"User {user} registered successfully!")
+            print(f"User {username} registered successfully!")
             break
 
     cursor.close()
