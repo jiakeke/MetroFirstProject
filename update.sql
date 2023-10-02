@@ -39,5 +39,5 @@ create table user_aircraft (
     aircraft_id int not null,
     primary key (id),
     foreign key (user_id) references user(id),
-    foreign key (aircraft_id) references aircrafts(id)
+    foreign key (aircraft_id) references aircraft(id)
 );
