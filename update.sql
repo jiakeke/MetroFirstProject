@@ -2,6 +2,7 @@
 
 drop table goal_reached;
 drop table game;
+drop table goal;
 
 create table user(
     id int not null auto_increment,
