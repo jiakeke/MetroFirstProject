@@ -12,7 +12,6 @@ Common Commands:
 import mysql.connector
 import os
 import sys
-from geopy.distance import geodesic
 
 program = os.path.basename(sys.argv[0])
 
@@ -43,16 +42,16 @@ def register_user():
     cursor = connection.cursor()
 
     while True:
-        user = input("Enter your desired username: ")
+        username = input("Enter your desired username: ")
         password = input("Enter your password: ")
 
         # Check if the username already exists
-        cursor.execute("SELECT id FROM user WHERE name = %s", (user,))
+        cursor.execute("SELECT id FROM user WHERE name = %s", (username,))
         if cursor.fetchone():
             print("This username is already taken. Please choose another one.")
         else:
             # Insert the new user
-            cursor.execute("INSERT INTO user (name, password) VALUES (%s, %s)", (user, password))
+            cursor.execute("INSERT INTO user (name, password) VALUES (%s, %s)", (username, password))
 
             # Get the id of the newly registered user
             user_id = cursor.lastrowid
