@@ -3,7 +3,7 @@ The group project for the first semester of Metropolia
 
 ## INSTALL
 
-* Create a configuration file named `config.py`, set db_user, db_pass inside it to overwrite the variables in pilot.py.
+* Rename `config.py.example` to `config.py`, set db_user, db_pass inside it to overwrite the variables in pilot.py.
     ```
     db_user = 'your_db_username'
     db_pass = 'your_db_password'
