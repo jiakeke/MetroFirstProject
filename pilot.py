@@ -123,6 +123,21 @@ def get_user_props(username):
     return max_range, max_capacity
 
 
+def get_random_airport_from_db():
+    connection = get_database_connection()
+    cursor = connection.cursor()
+
+    query = "SELECT name, latitude_deg, longitude_deg FROM airport WHERE continent = 'EU' ORDER BY RAND() LIMIT 1"
+    cursor.execute(query)
+    result = cursor.fetchone()
+
+    cursor.close()
+    connection.close()
+    if result:
+        return {"name": result[0], "coords": (result[1], result[2])}
+    return None
+
+
 def game_menu():
     """
     Display the game level information, include:
