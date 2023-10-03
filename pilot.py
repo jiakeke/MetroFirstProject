@@ -230,7 +230,8 @@ def byebye():
     """
     Display a goodbye message and end the process.
     """
-    pass
+    print("Goodbye!")
+    exit()
 
 
 def play():
