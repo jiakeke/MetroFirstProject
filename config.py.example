@@ -1,2 +1,6 @@
-db_user = 'root'
-db_pass = '12121122'
+# Rename the config.py.example to config.py and set the db_user and db_pass to correct version.
+
+db_name = 'pilot'
+db_user = ''
+db_pass = ''
+db_host = 'localhost'
