@@ -55,7 +55,7 @@ def login_or_register():
         username = input("Enter username: ")
         password = input("Enter password: ")
 
-        cursor.execute(f"SELECT password FROM user WHERE name = {username}")
+        cursor.execute(f"SELECT password FROM user WHERE name = '{username}'")
         result = cursor.fetchone()
 
         if result:
@@ -67,12 +67,17 @@ def login_or_register():
             else:
                 print("Incorrect password. Please try again.")
         else:
-            cursor.execute(f"INSERT INTO user (name, password, status) VALUES ('{username}', {password}, true)")
-            cursor.execute(f"INSERT INTO user_aircraft (user_id, aircraft_id) SELECT id, 1 FROM user WHERE name = '{username}'")
-            print(f"User registered and login successful!\nWelcome {username}!")
-            cursor.close()
-            connection.close()
-            return username
+            user_choice = input("A non-existent username has been detected. Do you want to register?"
+                                "(\nEnter yes to register, any other to login again):\n")
+            if user_choice == "yes":
+                cursor.execute(f"INSERT INTO user (name, password, status) VALUES ('{username}', {password}, true)")
+                cursor.execute(f"INSERT INTO user_aircraft (user_id, aircraft_id) SELECT id, 1 FROM user WHERE name = '{username}'")
+                print(f"User registered and login successful!\nWelcome {username}!")
+                cursor.close()
+                connection.close()
+                return username
+            else:
+                continue
 
 
 def menu():
