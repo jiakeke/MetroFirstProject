@@ -41,13 +41,3 @@ create table user_aircraft(
     foreign key (user_id) references user(id),
     foreign key (aircraft_id) references aircraft(id)
 );
-
-create table tutorial(
-    id int,
-    start_airport varchar(255),
-    end_airport varchar(255),
-    distance float,
-    passenger int,
-    reward int,
-    primary key (id)
-);
