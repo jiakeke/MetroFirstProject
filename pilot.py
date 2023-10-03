@@ -12,7 +12,6 @@ Common Commands:
 import mysql.connector
 import os
 import sys
-from geopy.distance import geodesic
 
 program = os.path.basename(sys.argv[0])
 
@@ -38,55 +37,6 @@ def get_database_connection():
     return connection
 
 
-def register_user():
-    connection = get_database_connection()
-    cursor = connection.cursor()
-
-    while True:
-        user = input("Enter your desired username: ")
-        password = input("Enter your password: ")
-
-        # Check if the username already exists
-        cursor.execute("SELECT id FROM user WHERE name = %s", (user,))
-        if cursor.fetchone():
-            print("This username is already taken. Please choose another one.")
-        else:
-            # Insert the new user
-            cursor.execute("INSERT INTO user (name, password) VALUES (%s, %s)", (user, password))
-
-            # Get the id of the newly registered user
-            user_id = cursor.lastrowid
-
-            # Assign the aircraft with id=1 to the user
-            cursor.execute("INSERT INTO user_aircrafts (user_id, aircraft_id) VALUES (%s, 1)", (user_id,))
-
-            connection.commit()
-            print(f"User {user} registered successfully!")
-            break
-
-    cursor.close()
-    connection.close()
-
-
-def login_user():
-    connection = get_database_connection()
-    cursor = connection.cursor()
-
-    while True:
-        username = input("Enter your username: ")
-        password = input("Enter your password: ")
-
-        cursor.execute("SELECT id FROM user WHERE name = %s AND password = %s", (username, password))
-        user = cursor.fetchone()
-        if user:
-            print(f"Welcome back, {username}!")
-            cursor.close()
-            connection.close()
-            return user[0]
-        else:
-            print("Invalid username or password. Please try again.")
-
-
 def login_or_register():
     """
     The login or registration page is displayed until the login is successful.
@@ -98,18 +48,36 @@ def login_or_register():
 
     Return the username after logging in.
     """
+    connection = get_database_connection()
+    cursor = connection.cursor()
+
     while True:
-        choice = input("\nDo you want to [R]egister or [L]ogin? (R/L): ").upper()
-        if choice == 'R':
-            register_user()
-            break
-        elif choice == 'L':
-            user_id = login_user()
-            if user_id:
-                return user_id
-            break
+        username = input("Enter username: ")
+        password = input("Enter password: ")
+
+        cursor.execute(f"SELECT password FROM user WHERE name = '{username}'")
+        result = cursor.fetchone()
+
+        if result:
+            if result[0] == password:
+                print(f"Login successful!\nWelcome {username}!")
+                cursor.close()
+                connection.close()
+                return username
+            else:
+                print("Incorrect password. Please try again.")
         else:
-            print("Invalid choice. Please choose R for Register or L for Login.")
+            user_choice = input("A non-existent username has been detected. Do you want to register?"
+                                "(\nEnter yes to register, any other to login again):\n")
+            if user_choice == "yes":
+                cursor.execute(f"INSERT INTO user (name, password, status) VALUES ('{username}', {password}, true)")
+                cursor.execute(f"INSERT INTO user_aircraft (user_id, aircraft_id) SELECT id, 1 FROM user WHERE name = '{username}'")
+                print(f"User registered and login successful!\nWelcome {username}!")
+                cursor.close()
+                connection.close()
+                return username
+            else:
+                continue
 
 
 def menu():
@@ -136,13 +104,47 @@ def menu():
             method()
 
 
-def get_user_props():
+def get_user_props(username):
     """
     Returns the maximum range and passenger capacity of all planes owned by the
     player
     """
-    pass
-    #return (max_range, capacity)
+    connection = get_database_connection()
+    cursor = connection.cursor()
+
+    cursor.execute(
+        f"select passenger_capacity, flight_range from aircraft, user_aircraft, user where aircraft.id = aircraft_id and user.id = user_id and user.name = '{username}'")
+    result = cursor.fetchall()
+    max_capacity = max([capacity[0] for capacity in result])
+    max_range = max([flight_range[1] for flight_range in result])
+
+    cursor.close()
+    connection.close()
+    return max_range, max_capacity
+
+
+def get_random_airport_from_db():
+    connection = get_database_connection()
+    cursor = connection.cursor()
+
+    query = "SELECT name, latitude_deg, longitude_deg FROM airport WHERE continent = 'EU' ORDER BY RAND() LIMIT 1"
+    cursor.execute(query)
+    result = cursor.fetchone()
+
+    cursor.close()
+    connection.close()
+    if result:
+        return {"name": result[0], "coords": (result[1], result[2])}
+    return None
+
+
+def tutorial():
+    start_airport = 'Berlin Tegel Airport'
+    end_airport = 'Hamburg Airport'
+    distance = 255.96
+    passenger = 40
+    reward = 1000
+    return start_airport, end_airport, distance, passenger, reward
 
 
 def game_menu():
@@ -257,7 +259,8 @@ def byebye():
     """
     Display a goodbye message and end the process.
     """
-    pass
+    print("Goodbye!")
+    exit()
 
 
 def play():
