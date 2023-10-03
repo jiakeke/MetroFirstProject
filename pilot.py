@@ -99,13 +99,23 @@ def menu():
             method()
 
 
-def get_user_props():
+def get_user_props(username):
     """
     Returns the maximum range and passenger capacity of all planes owned by the
     player
     """
-    pass
-    #return (max_range, capacity)
+    connection = get_database_connection()
+    cursor = connection.cursor()
+
+    cursor.execute(
+        f"select passenger_capacity, flight_range from aircraft, user_aircraft, user where aircraft.id = aircraft_id and user.id = user_id and user.name = '{username}'")
+    result = cursor.fetchall()
+    max_capacity = max([capacity[0] for capacity in result])
+    max_range = max([flight_range[1] for flight_range in result])
+
+    cursor.close()
+    connection.close()
+    return max_range, max_capacity
 
 
 def game_menu():
