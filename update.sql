@@ -33,11 +33,21 @@ insert into aircraft (name, passenger_capacity, flight_range, price, carbon_emis
 insert into aircraft (name, passenger_capacity, flight_range, price, carbon_emission) values ('Cargo plane', 20, 1500, 20000, 1);
 insert into aircraft (name, passenger_capacity, flight_range, price, carbon_emission) values ('Stealth jet', 100, 2500, 65000, 1);
 
-create table user_aircraft (
+create table user_aircraft(
     id int not null auto_increment,
     user_id int not null,
     aircraft_id int not null,
     primary key (id),
     foreign key (user_id) references user(id),
     foreign key (aircraft_id) references aircraft(id)
+);
+
+create table tutorial(
+    id int,
+    start_airport varchar(255),
+    end_airport varchar(255),
+    distance float,
+    passenger int,
+    reward int,
+    primary key (id)
 );
