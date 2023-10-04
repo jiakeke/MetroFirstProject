@@ -94,17 +94,21 @@ def menu():
     """
     # Show the menu here
     menus = {
-        '1': {'name': 'Game', 'method': game_menu},
+        '1': {'name': 'Start Game', 'method': game_menu},
         '2': {'name': 'Store', 'method': store_menu},
-        '3': {'name': 'Gallery', 'method': gallery_menu},
+        '3': {'name': 'Aircraft Gallery', 'method': gallery_menu},
         '4': {'name': 'Ranking', 'method': ranking_menu},
         '5': {'name': 'Quit', 'method': byebye},
     }
 
+    print("--- Main manu ---")
+    for key, value in menus.items():
+        print(f"{key}. {value['name']}")
+
     while True:
         number = input(
             "Please choose the number in the menu to enter the corresponding "
-            "section."
+            "section:"
         )
         if number in menus:
             method = menus[number]['method']
