@@ -73,7 +73,7 @@ def login_or_register():
                                 "any other to login again):\n")
             if user_choice == "yes":
                 cursor.execute("INSERT INTO user (name, password, status) "
-                               f"VALUES ('{username}', {password}, true)")
+                               f"VALUES ('{username}', '{password}', true)")
                 cursor.execute("INSERT INTO "
                                "user_aircraft (user_id, aircraft_id) "
                                "SELECT id, 1 FROM user "
@@ -85,7 +85,7 @@ def login_or_register():
                 return username
             else:
                 continue
-
+login_or_register()
 
 def menu():
     """
