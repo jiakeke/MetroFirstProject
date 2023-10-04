@@ -338,15 +338,13 @@ def run_command(cmd):
 
 def main():
     if len(sys.argv) == 1:
-        usage()
-        sys.exit(0)
+        play()
     cmd = sys.argv[1]
     if cmd in cmds_map:
         method = cmds_map[cmd]
         method()
     else:
-        usage()
-        sys.exit(0)
+        play()
 
 def usage():
     print(__doc__ % {"program": program})
