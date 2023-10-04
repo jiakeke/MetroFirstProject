@@ -67,12 +67,19 @@ def login_or_register():
             else:
                 print("Incorrect password. Please try again.")
         else:
-            user_choice = input("A non-existent username has been detected. Do you want to register?"
-                                "(\nEnter yes to register, any other to login again):\n")
+            user_choice = input("A non-existent username has been detected. "
+                                "Do you want to register?"
+                                "(\nEnter yes to register, "
+                                "any other to login again):\n")
             if user_choice == "yes":
-                cursor.execute(f"INSERT INTO user (name, password, status) VALUES ('{username}', {password}, true)")
-                cursor.execute(f"INSERT INTO user_aircraft (user_id, aircraft_id) SELECT id, 1 FROM user WHERE name = '{username}'")
-                print(f"User registered and login successful!\nWelcome {username}!")
+                cursor.execute("INSERT INTO user (name, password, status) "
+                               f"VALUES ('{username}', {password}, true)")
+                cursor.execute("INSERT INTO "
+                               "user_aircraft (user_id, aircraft_id) "
+                               "SELECT id, 1 FROM user "
+                               f"WHERE name = '{username}'")
+                print("User registered and login successful!"
+                      f"\nWelcome {username}!")
                 cursor.close()
                 connection.close()
                 return username
@@ -113,7 +120,10 @@ def get_user_props(username):
     cursor = connection.cursor()
 
     cursor.execute(
-        f"select passenger_capacity, flight_range from aircraft, user_aircraft, user where aircraft.id = aircraft_id and user.id = user_id and user.name = '{username}'")
+        "select passenger_capacity, flight_range "
+        "from aircraft, user_aircraft, user "
+        "where aircraft.id = aircraft_id "
+        f"and user.id = user_id and user.name = '{username}'")
     result = cursor.fetchall()
     max_capacity = max([capacity[0] for capacity in result])
     max_range = max([flight_range[1] for flight_range in result])
@@ -127,7 +137,8 @@ def get_random_airport_from_db():
     connection = get_database_connection()
     cursor = connection.cursor()
 
-    query = "SELECT name, latitude_deg, longitude_deg FROM airport WHERE continent = 'EU' ORDER BY RAND() LIMIT 1"
+    query = ("SELECT name, latitude_deg, longitude_deg FROM airport "
+             "WHERE continent = 'EU' ORDER BY RAND() LIMIT 1")
     cursor.execute(query)
     result = cursor.fetchone()
 
