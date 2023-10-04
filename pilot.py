@@ -12,6 +12,8 @@ Common Commands:
 import mysql.connector
 import os
 import sys
+from geopy.distance import geodesic
+import random
 
 program = os.path.basename(sys.argv[0])
 
@@ -24,6 +26,7 @@ db_host = 'localhost'
 if os.path.exists('config.py'):
     from config import *
 
+user_info = {'username': ''}
 
 def get_database_connection():
     connection = mysql.connector.connect(
@@ -32,7 +35,6 @@ def get_database_connection():
         database=db_name,
         user=db_user,
         password=db_pass,
-        autocommit=True
     )
     return connection
 
@@ -63,6 +65,7 @@ def login_or_register():
                 print(f"Login successful!\nWelcome {username}!")
                 cursor.close()
                 connection.close()
+                user_info['username'] = username
                 return username
             else:
                 print("Incorrect password. Please try again.")
@@ -72,16 +75,25 @@ def login_or_register():
                                 "(\nEnter yes to register, "
                                 "any other to login again):\n")
             if user_choice == "yes":
-                cursor.execute("INSERT INTO user (name, password, status) "
-                               f"VALUES ('{username}', '{password}', true)")
-                cursor.execute("INSERT INTO "
-                               "user_aircraft (user_id, aircraft_id) "
-                               "SELECT id, 1 FROM user "
-                               f"WHERE name = '{username}'")
-                print("User registered and login successful!"
-                      f"\nWelcome {username}!")
-                cursor.close()
-                connection.close()
+                try:
+                    cursor.execute(
+                        "INSERT INTO user (name, password, status) "
+                        f"VALUES ('{username}', '{password}', true)")
+                    cursor.execute(
+                        "INSERT INTO "
+                        "user_aircraft (user_id, aircraft_id) "
+                        "SELECT id, 1 FROM user "
+                        f"WHERE name = '{username}'")
+                    print("User registered and login successful!"
+                          f"\nWelcome {username}!")
+                    connection.commit()
+                    cursor.close()
+                    connection.close()
+                except mysql.connector.Error as err:
+                    print(err)
+                    connection.rollback()
+                print(username)
+                user_info['username'] = username
                 return username
             else:
                 continue
@@ -115,19 +127,17 @@ def menu():
             method()
 
 
-def get_user_props(username):
+def get_user_props():
     """
     Returns the maximum range and passenger capacity of all planes owned by the
     player
     """
     connection = get_database_connection()
     cursor = connection.cursor()
-
-    cursor.execute(
-        "select passenger_capacity, flight_range "
-        "from aircraft, user_aircraft, user "
-        "where aircraft.id = aircraft_id "
-        f"and user.id = user_id and user.name = '{username}'")
+    cursor.execute("select passenger_capacity, flight_range "
+            "from aircraft, user_aircraft, user "
+            "where aircraft.id = aircraft_id "
+            f"and user.id = user_id and user.name = '{user_info['username']}'")
     result = cursor.fetchall()
     max_capacity = max([capacity[0] for capacity in result])
     max_range = max([flight_range[1] for flight_range in result])
@@ -171,6 +181,33 @@ def calculate_carbon_emission(distance):
         return 55 + 0.105 * (distance - 200)
     else:
         return distance * 0.139
+
+
+def calculate_distance(start_airport, destination_airport):
+    distance = geodesic(start_airport["coords"],
+                        destination_airport["coords"]).kilometers
+    return distance
+
+
+def generate_new_task():
+    while True:
+        start_airport = get_random_airport_from_db()
+        destination_airport = get_random_airport_from_db()
+
+        while start_airport["name"] == destination_airport["name"]:
+            destination_airport = get_random_airport_from_db()
+
+        distance = round(calculate_distance(start_airport,
+                                            destination_airport), 2)
+        passenger = random.randint(10, 500)
+        max_range, max_capacity = get_user_props()
+        if (distance <= max_range * 1.1) and (
+                passenger <= max_capacity * 1.1):
+            reward = random.randint(int(distance * 10), int(distance * 20))
+            new_task = (start_airport["name"], destination_airport["name"],
+                        distance, passenger, reward)
+            return new_task
+
 
 def game_menu():
     """
@@ -290,9 +327,8 @@ def byebye():
 
 def play():
     #Set username as a global variable and do not modify it.
-    global username
-    username = login_or_register()
-    if username:
+    login_or_register()
+    if user_info['username']:
         menu()
     else:
         byebye()
