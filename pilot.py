@@ -85,7 +85,7 @@ def login_or_register():
                 return username
             else:
                 continue
-login_or_register()
+
 
 def menu():
     """
