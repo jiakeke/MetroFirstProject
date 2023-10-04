@@ -157,6 +157,16 @@ def tutorial():
     reward = 1000
     return start_airport, end_airport, distance, passenger, reward
 
+def calculate_carbon_emission(distance):
+    """
+    Calculate the carbon emission based on the given distance.
+    """
+    if distance <= 200:
+        return distance * 0.275
+    elif 200 < distance <= 1000:
+        return 55 + 0.105 * (distance - 200)
+    else:
+        return distance * 0.139
 
 def game_menu():
     """
