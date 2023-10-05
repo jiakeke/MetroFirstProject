@@ -41,3 +41,87 @@ create table user_aircraft(
     foreign key (user_id) references user(id),
     foreign key (aircraft_id) references aircraft(id)
 );
+
+delete from aircraft
+where name = 'Stealth jet';
+
+alter table aircraft
+modify column carbon_emission FLOAT;
+
+update aircraft
+set passenger_capacity = 10, flight_range = 500, price = 0, carbon_emission = 1.5
+where name = 'Basic plane';
+
+update aircraft
+set name = 'SkyHawk100'
+where passenger_capacity = 10;
+
+update aircraft
+set passenger_capacity = 20, flight_range = 700, price = 30, carbon_emission = 1.45
+where name = 'Advanced plane';
+
+update aircraft
+set name = 'Phoenix Glide'
+where passenger_capacity = 20;
+
+update aircraft
+set passenger_capacity = 30, flight_range = 1000, price = 100, carbon_emission = 1.4
+where name = 'Eco plane';
+
+update aircraft
+set name = 'AeroWing X-200'
+where passenger_capacity = 30;
+
+update aircraft
+set passenger_capacity = 50, flight_range = 1200, price = 200, carbon_emission = 1.3
+where name = 'Super plane';
+
+update aircraft
+set name = 'StarStrider Zephyr'
+where passenger_capacity = 50;
+
+update aircraft
+set passenger_capacity = 75, flight_range = 1500, price = 500, carbon_emission = 1.2
+where name = 'Ultimate plane';
+
+update aircraft
+set name = 'SilverArrow 500'
+where passenger_capacity = 75;
+
+update aircraft
+set passenger_capacity = 100, flight_range = 1800, price = 1000, carbon_emission = 1.1
+where name = 'Turbo jet';
+
+update aircraft
+set name = 'Aurora Seraphim'
+where passenger_capacity = 100;
+
+update aircraft
+set passenger_capacity = 150, flight_range = 2500, price = 1800, carbon_emission = 1.0
+where name = 'Eco jet';
+
+update aircraft
+set name = 'Quantum Skystreamer'
+where passenger_capacity = 150;
+
+update aircraft
+set passenger_capacity = 300, flight_range = 3500, price = 2500, carbon_emission = 0.9
+where name = 'Luxury liner';
+
+update aircraft
+set name = 'Neptune Voyager'
+where passenger_capacity = 300;
+
+update aircraft
+set name = 'Elysium Celestial', passenger_capacity = 500, flight_range = 5000, carbon_emission = 0.75
+where price = 20000;
+
+update aircraft
+set price = 5000
+where name = 'Elysium Celestial';
+
+
+
+
+
+
