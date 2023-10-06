@@ -14,6 +14,7 @@ import os
 import sys
 from geopy.distance import geodesic
 import random
+import flying
 
 program = os.path.basename(sys.argv[0])
 
@@ -266,6 +267,7 @@ def game_play(max_range, capacity, quantity, departure, destination, quotation, 
         - Go back to the game menu, awaiting for a new task.
 
     """
+    #flying.flying(plane_picture) # pass the ascii picture of the plane.
     pass
 
 def store_menu():
