@@ -167,7 +167,7 @@ def tutorial():
     start_airport = 'Berlin Tegel Airport'
     end_airport = 'Hamburg Airport'
     distance = 255.96
-    passenger = 40
+    passenger = 10
     reward = 1000
     return start_airport, end_airport, distance, passenger, reward
 
@@ -366,4 +366,6 @@ cmds_map = {
 
 if __name__ == "__main__":
     main()
+
+
 
