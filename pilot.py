@@ -93,7 +93,6 @@ def login_or_register():
                 except mysql.connector.Error as err:
                     print(err)
                     connection.rollback()
-                print(username)
                 user_info['username'] = username
                 return username
             else:
@@ -148,7 +147,7 @@ def get_user_props():
     return max_range, max_capacity
 
 
-def get_random_airport_from_db():
+def get_random_airport():
     connection = get_database_connection()
     cursor = connection.cursor()
 
@@ -192,11 +191,11 @@ def calculate_distance(start_airport, destination_airport):
 
 def generate_new_task():
     while True:
-        start_airport = get_random_airport_from_db()
-        destination_airport = get_random_airport_from_db()
+        start_airport = get_random_airport()
+        destination_airport = get_random_airport()
 
         while start_airport["name"] == destination_airport["name"]:
-            destination_airport = get_random_airport_from_db()
+            destination_airport = get_random_airport()
 
         distance = round(calculate_distance(start_airport,
                                             destination_airport), 2)
