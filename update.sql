@@ -242,5 +242,8 @@ set aircraft.image = '
               `''''''''`      ``---``        `''''''''` '
 where id = 9;
 
+alter table aircraft
+modify column image Text;
+
 
 
