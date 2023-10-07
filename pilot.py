@@ -93,7 +93,6 @@ def login_or_register():
                 except mysql.connector.Error as err:
                     print(err)
                     connection.rollback()
-                print(username)
                 user_info['username'] = username
                 return username
             else:
