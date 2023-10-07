@@ -245,5 +245,25 @@ where id = 9;
 alter table aircraft
 modify column image Text;
 
+alter table aircraft
+add column plane_key VARCHAR(50);
+
+update aircraft
+set plane_key = CASE
+when id = 1 then 'sky_hawk_100'
+when id = 2 then 'phoenix_glide'
+when id = 3 then 'aero_wing_x_200'
+when id = 4 then 'star_strider_zephyr'
+when id = 5 then 'silver_arrow_500'
+when id = 6 then 'aurora_seraphim'
+when id = 7 then 'quantum_sky_streamer'
+when id = 8 then 'neptune_voyager'
+when id = 9 then 'elysium_celestial'
+else null
+end;
+
+
+
+
 
 
