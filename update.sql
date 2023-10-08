@@ -263,7 +263,10 @@ else null
 end;
 
 
-
+alter table user
+add column total_amount FLOAT,
+add column balance FLOAT,
+add column carbon_emission FLOAT;
 
 
 
