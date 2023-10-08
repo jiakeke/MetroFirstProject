@@ -18,3 +18,9 @@ The group project for the first semester of Metropolia
     ```
     python pilot.py play
     ```
+
+* Install tabulate:
+    ```
+    pip install tabulate
+    ```
+
