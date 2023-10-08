@@ -14,7 +14,11 @@ import os
 import sys
 from geopy.distance import geodesic
 import random
+
 import flying
+
+
+
 
 program = os.path.basename(sys.argv[0])
 
@@ -208,6 +212,40 @@ def generate_new_task():
                         distance, passenger, reward)
             return new_task
 
+def get_weather_parameter(latitude):
+    weather = 'Normal'
+    weather_parameter = 1.0
+    rainnumber = random.randint(1,5)
+    if rainnumber == 1:
+        weather = 'Heavy Rain'
+        weather_parameter = 1.1
+    elif rainnumber == 5:
+        weather = 'Great Weather'
+        weather_parameter = 0.9
+    else:
+        if latitude >= 60:
+            blizzardnumber = random.randint(1,20)
+            if blizzardnumber == 1:
+                weather = 'Blizzard'
+                weather_parameter = 1.3
+            elif blizzardnumber == 2 or blizzardnumber == 3:
+                weather = 'Snow'
+                weather_parameter = 1.2
+        elif latitude >= 40:
+            snownumber = random.randint(1,10)
+            if snownumber == 1:
+                weather = 'Snow'
+                weather_parameter = 1.2
+        elif latitude <= 30:
+            thundernumber = random.randint(1,20)
+            if thundernumber == 1 or thundernumber == 2 or thundernumber == 3:
+                weather = 'Thunderstorm'
+                weather_parameter = 1.2
+    return weather, weather_parameter
+
+
+
+
 
 def game_menu():
     """
@@ -220,6 +258,8 @@ def game_menu():
     Display sub menu:
     (Game Menu: 1. Plane1, 2. Plane2, 3. Plane3, ..., R. Refresh, Q. Go Back)
     """
+
+
     while True:
         max_range, capacity = get_user_props()
         game_props = game_level_display()
