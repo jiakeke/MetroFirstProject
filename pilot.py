@@ -194,6 +194,9 @@ def calculate_distance(start_airport, destination_airport):
 
 
 def generate_new_task():
+    """
+        Display a teaching game for the new user, or a random game.
+    """
     while True:
         start_airport = get_random_airport()
         destination_airport = get_random_airport()
@@ -266,7 +269,7 @@ def game_menu():
 
     while True:
         max_range, capacity = get_user_props()
-        game_props = game_level_display()
+        game_props = generate_new_task()
 
         number = input(
             "Please choose the plane number to "
@@ -283,15 +286,7 @@ def game_menu():
             game_play(max_range, capacity, *game_props)
 
 
-def game_level_display(max_range, capacity):
-    """
-    Display a teaching game for the new user, or a random game.
-    """
-    pass
-    #return (quantity, departure, destination, quotation, weather, temperature)
-
-
-def game_play(max_range, capacity, quantity, departure, destination, quotation, weather, temperature):
+def game_play(max_range, capacity, start_airport, end_airport, distance, passenger, reward):
     """
     Play the game, include:
         - Calculate the carbon emission,
@@ -310,6 +305,7 @@ def game_play(max_range, capacity, quantity, departure, destination, quotation, 
         - Go back to the game menu, awaiting for a new task.
 
     """
+
     #flying.flying(plane_picture) # pass the ascii picture of the plane.
     pass
 
