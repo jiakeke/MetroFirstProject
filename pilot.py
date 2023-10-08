@@ -313,7 +313,8 @@ def game_menu():
         if number.isdigit() and 0 < int(number) <= len(user_aircraft):
             selected_aircraft_id = user_aircraft[int(number) - 1][0]
             # Start game
-            game_play(selected_aircraft_id, max_range, capacity, *game_props)
+            game_play(
+                selected_aircraft_id, max_range, capacity, *game_props[2:])
 
         elif number == 'R':
             continue
@@ -326,7 +327,7 @@ def game_menu():
             return game_menu()
 
 
-def game_play(number, max_range, capacity, start_airport, end_airport, distance, passenger, reward):
+def game_play(number, max_range, capacity, distance, passenger, reward):
     """
     Play the game, include:
         - Calculate the carbon emission,
