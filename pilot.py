@@ -215,38 +215,31 @@ def generate_new_task():
         reward = (total_cost + 500) * random.randint(90, 120) / 100
         new_task = (start_airport["name"], destination_airport["name"],
                     distance, passenger, reward)
+
         return new_task
 
-def get_weather_parameter(latitude):
-    weather = 'Normal'
-    weather_parameter = 1.0
-    rainnumber = random.randint(1,5)
-    if rainnumber == 1:
-        weather = 'Heavy Rain'
-        weather_parameter = 1.1
-    elif rainnumber == 5:
-        weather = 'Great Weather'
-        weather_parameter = 0.9
-    else:
-        if latitude >= 60:
-            blizzardnumber = random.randint(1,20)
-            if blizzardnumber == 1:
-                weather = 'Blizzard'
-                weather_parameter = 1.3
-            elif blizzardnumber == 2 or blizzardnumber == 3:
-                weather = 'Snow'
-                weather_parameter = 1.2
-        elif latitude >= 40:
-            snownumber = random.randint(1,10)
-            if snownumber == 1:
-                weather = 'Snow'
-                weather_parameter = 1.2
-        elif latitude <= 30:
-            thundernumber = random.randint(1,20)
-            if thundernumber == 1 or thundernumber == 2 or thundernumber == 3:
-                weather = 'Thunderstorm'
-                weather_parameter = 1.2
-    return weather, weather_parameter
+def get_weather_index(latitude):
+    weather_setting = {
+        1: ('Normal', 1.0),
+        2: ('Great Weather', 0.9),
+        3: ('Heavy Rain', 1.1),
+        4: ('Blizzard', 1.3),
+        5: ('Snow', 1.2),
+        6: ('Thunderstorm', 1.2)
+    }
+    weather_index = weather_setting[1]
+    if random.random() <= 0.20:
+        weather_index = weather_setting[2]
+    elif random.random() >= 0.80:
+        weather_index = weather_setting[3]
+    elif latitude >= 60 and random.random() <= 0.05:
+        weather_index = weather_setting[4]
+    elif latitude >= 40 and random.random() <= 0.10:
+        weather_index = weather_setting[5]
+    elif latitude <= 30 and random.random() <= 0.15:
+        weather_index = weather_setting[6]
+    return weather_index
+
 
 
 def get_user_aircraft(username):
