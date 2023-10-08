@@ -205,9 +205,13 @@ def generate_new_task():
                                             destination_airport), 2)
         passenger = random.randint(10, 500)
         max_range, max_capacity = get_user_props()
+        emission = calculate_carbon_emission(distance)
+        carbon_cost = emission * 1.3
+        postage_cost = distance * 0.3
+        total_cost = postage_cost + carbon_cost
         if (distance <= max_range * 1.1) and (
                 passenger <= max_capacity * 1.1):
-            reward = random.randint(int(distance * 10), int(distance * 20))
+            reward = total_cost + 500
             new_task = (start_airport["name"], destination_airport["name"],
                         distance, passenger, reward)
             return new_task
