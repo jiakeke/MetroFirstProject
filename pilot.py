@@ -16,6 +16,7 @@ from geopy.distance import geodesic
 import random
 
 import flying
+from tabulate import tabulate
 
 
 
@@ -400,8 +401,22 @@ def store_menu():
     connection = get_database_connection()
     cursor = connection.cursor()
     cursor.execute(
-        "SELECT * FROM aircraft"
+        "SELECT id, name, passenger_capacity, "
+        "flight_range, price, carbon_emission FROM aircraft"
     )
+    result = cursor.fetchall()
+    headers = ["id", "name", "passenger capacity", "flight range", "price", "carbon emission"]
+    table = tabulate(result, headers, tablefmt="grid")
+    print(table)
+    shop_menu_choice = input("For checking aircraft image and purchasing, please enter the aircraft's id.\n"
+                             "For going back to the main menu, please press enter. ")
+    if shop_menu_choice == None:
+        menu()
+        elif
+
+
+
+
 
     pass
 
