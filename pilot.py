@@ -123,7 +123,7 @@ def menu():
 
     while True:
         number = input(
-            "Please choose the number in the menu to enter the corresponding "
+            "Please choose the number in the menu to enter the corresFponding "
             "section:"
         )
         if number in menus:
@@ -214,7 +214,7 @@ def generate_new_task():
         total_cost = postage_cost + carbon_cost
         if (distance <= max_range * 1.1) and (
                 passenger <= max_capacity * 1.1):
-            reward = total_cost + 500
+            reward = (total_cost + 500) * random.randint(90, 120) / 100
             new_task = (start_airport["name"], destination_airport["name"],
                         distance, passenger, reward)
             return new_task
@@ -251,7 +251,20 @@ def get_weather_parameter(latitude):
     return weather, weather_parameter
 
 
-
+def get_user_aircraft(username):
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    query = ("SELECT aircraft.id, aircraft.name, aircraft.flight_range, "
+             "aircraft.passenger_capacity as capacity "
+             "FROM user_aircraft JOIN aircraft "
+             "ON user_aircraft.aircraft_id = aircraft.id "
+             "JOIN user ON user_aircraft.user_id = user.id "
+             f"WHERE user.name = '{username}'")
+    cursor.execute(query)
+    result = cursor.fetchall()
+    cursor.close()
+    connection.close()
+    return result
 
 
 def game_menu():
@@ -269,24 +282,53 @@ def game_menu():
 
     while True:
         max_range, capacity = get_user_props()
-        game_props = generate_new_task()
+
+        connection = get_database_connection()
+        cursor = connection.cursor()
+        cursor.execute(
+            f"SELECT status FROM user WHERE name = '{user_info['username']}'")
+        result = cursor.fetchone()
+        if result[0] == 1:
+            game_props = tutorial()
+            cursor.execute(
+                "UPDATE user SET status = False "
+                f"WHERE name = '{user_info['username']}'")
+            connection.commit()
+        else:
+            game_props = generate_new_task()
+
+        print(f"Fly from {game_props[0]} to {game_props[1]}. "
+              f"\nDistance: {game_props[2]} km "
+              f"\nCarry {game_props[3]} passengers "
+              f"for an offer of {game_props[4]} coins")
+        user_aircraft = get_user_aircraft(user_info['username'])
+        for idx, aircraft in enumerate(user_aircraft, 1):
+            print(
+                f"{idx}. {aircraft[1]} "
+                f"- Range: {aircraft[2]}km "
+                f"- Capacity: {aircraft[3]} passengers")
 
         number = input(
             "Please choose the plane number to "
             "section."
         )
-        if number == 'R':
+        if number.isdigit() and 0 < int(number) <= len(user_aircraft):
+            selected_aircraft_id = user_aircraft[int(number) - 1][0]
+            # Start game
+            game_play(selected_aircraft_id, max_range, capacity, *game_props)
+
+        elif number == 'R':
             continue
 
         elif number == 'Q':
             break
 
         else:
-            # Start game
-            game_play(max_range, capacity, *game_props)
+            print("Invalid choice. Please try again.")
+            return game_menu()
 
 
-def game_play(max_range, capacity, start_airport, end_airport, distance, passenger, reward):
+def game_play(number, max_range, capacity, start_airport, end_airport, distance, passenger, reward):
     """
     Play the game, include:
         - Calculate the carbon emission,
@@ -306,8 +348,48 @@ def game_play(max_range, capacity, start_airport, end_airport, distance, passeng
 
     """
 
-    #flying.flying(plane_picture) # pass the ascii picture of the plane.
-    pass
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute(
+        "SELECT carbon_emission FROM aircraft, user_aircraft, user "
+        "WHERE user_aircraft.aircraft_id = aircraft.id "
+        "AND user_aircraft.user_id = user.id "
+        f"AND user_aircraft.id = {number}")
+    result = cursor.fetchone()
+    carbon_coefficient = result[0]
+    cursor.close()
+    connection.close()
+
+    carbon_emission = calculate_carbon_emission(distance)
+    carbon_cost = carbon_emission * carbon_coefficient
+    postage_cost = distance * 2.5
+    total_cost = postage_cost + carbon_cost
+
+    refuel_cost = 0
+    refuel_times = 0
+    if distance > max_range:
+        refuel_times = int(distance / max_range)
+        refuel_cost = 50 * refuel_times
+        total_cost += refuel_cost
+
+    if passenger > capacity:
+        print(
+            "Task failed! "
+            "The number of passengers exceeds your plane's capacity.")
+        return game_menu()
+
+    total_income = reward - total_cost
+    flying.flying()
+
+    if refuel_cost:
+        print(
+            f"You had to refuel {refuel_times} times during your trip. "
+            f"This cost an additional {refuel_cost} coins.")
+
+    print(
+        f"Task successful!\nYou earned: {total_income}\n"
+        f"Total cost was: {total_cost}")
+    game_menu()
 
 def store_menu():
     """
