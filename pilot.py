@@ -214,7 +214,7 @@ def generate_new_task():
         total_cost = postage_cost + carbon_cost
         reward = (total_cost + 500) * random.randint(90, 120) / 100
         new_task = (start_airport["name"], destination_airport["name"],
-                    distance, passenger, reward)
+                    distance, passenger, reward, destination_airport["coords"][0])
 
         return new_task
 
@@ -397,6 +397,12 @@ def store_menu():
     Display sub menu:
     (Store Menu: Enter the plane number to buy, or press Q. Go Back)
     """
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute(
+        "SELECT * FROM aircraft"
+    )
+
     pass
 
 
