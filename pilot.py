@@ -212,11 +212,12 @@ def generate_new_task():
         passenger = random.randint(1, max_capacity + 10)
         emission = calculate_carbon_emission(distance)
         carbon_cost = emission * 1.3
-        postage_cost = distance * 2.5
-        total_cost = postage_cost + carbon_cost
+        fuel_cost = distance * 2.5
+        total_cost = fuel_cost + carbon_cost
         reward = (total_cost + 500) * random.randint(90, 120) / 100
         new_task = (start_airport["name"], destination_airport["name"],
-                    distance, passenger, reward, destination_airport["coords"][0])
+                    distance, passenger, reward,
+                    destination_airport["coords"][0])
 
         return new_task
 
@@ -272,7 +273,6 @@ def game_menu():
     (Game Menu: 1. Plane1, 2. Plane2, 3. Plane3, ..., R. Refresh, Q. Go Back)
     """
 
-
     while True:
         max_range, capacity = get_user_props()
 
@@ -294,6 +294,7 @@ def game_menu():
               f"\nDistance: {game_props[2]} km "
               f"\nCarry {game_props[3]} passengers "
               f"for an offer of {game_props[4]} coins")
+        print("Tip: Destination weather may affect flight costs.")
         user_aircraft = get_user_aircraft(user_info['username'])
         for idx, aircraft in enumerate(user_aircraft, 1):
             print(
@@ -302,8 +303,9 @@ def game_menu():
                 f"- Capacity: {aircraft[3]} passengers")
 
         number = input(
-            "Please choose the plane number to "
-            "section."
+            "Please choose the plane number to complete the task"
+            "\nR to refresh a new task"
+            "\nQ to quit to menu"
         )
         if number.isdigit() and 0 < int(number) <= len(user_aircraft):
             selected_aircraft_id = user_aircraft[int(number) - 1][0]
@@ -315,14 +317,16 @@ def game_menu():
             continue
 
         elif number == 'Q':
-            break
+            return menu()
 
         else:
             print("Invalid choice. Please try again.")
             return game_menu()
 
 
-def game_play(number, max_range, capacity, distance, passenger, reward):
+
+def game_play(number, max_range, capacity, distance,
+              passenger, reward, latitude):
     """
     Play the game, include:
         - Calculate the carbon emission,
@@ -356,8 +360,8 @@ def game_play(number, max_range, capacity, distance, passenger, reward):
 
     carbon_emission = calculate_carbon_emission(distance)
     carbon_cost = carbon_emission * carbon_coefficient
-    postage_cost = distance * 2.5
-    total_cost = postage_cost + carbon_cost
+    fuel_cost = distance * 2.5
+    total_cost = (fuel_cost + carbon_cost) * get_weather_index(latitude)[1]
 
     refuel_cost = 0
     refuel_times = 0
