@@ -83,14 +83,15 @@ def login_or_register():
             if user_choice == "yes":
                 try:
                     cursor.execute(
-                        "INSERT INTO user (name, password, status) "
-                        f"VALUES ('{username}', '{password}', true)")
+                        "INSERT INTO user (name, password, status, "
+                        "total_amount, balance, carbon_emission) "
+                        f"VALUES ('{username}', '{password}', true, 0, 0, 0)")
                     cursor.execute(
                         "INSERT INTO user_aircraft (user_id, aircraft_id) "
                         "SELECT user.id, aircraft.id "
                         "FROM user, aircraft "
-                        f"WHERE u.name = '{username}' "
-                        "AND a.plane_key = 'sky_hawk_100';")
+                        f"WHERE user.name = '{username}' "
+                        "AND plane_key = 'sky_hawk_100';")
                     print("User registered and login successful!"
                           f"\nWelcome {username}!")
                     connection.commit()
