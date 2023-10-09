@@ -119,11 +119,10 @@ def menu():
         '5': {'name': 'Quit', 'method': byebye},
     }
 
-    print("--- Main manu ---")
-    for key, value in menus.items():
-        print(f"{key}. {value['name']}")
-
     while True:
+        print("--- Main manu ---")
+        for key, value in menus.items():
+            print(f"{key}. {value['name']}")
         number = input(
             "Please choose the number in the menu to enter the corresFponding "
             "section:"
@@ -305,7 +304,7 @@ def game_menu():
         number = input(
             "Please choose the plane number to complete the task"
             "\nR to refresh a new task"
-            "\nQ to quit to menu"
+            "\nQ to quit to menu\n"
         )
         if number.isdigit() and 0 < int(number) <= len(user_aircraft):
             selected_aircraft_id = user_aircraft[int(number) - 1][0]
@@ -349,7 +348,7 @@ def game_play(number, max_range, capacity, distance,
     connection = get_database_connection()
     cursor = connection.cursor()
     cursor.execute(
-        "SELECT carbon_emission FROM aircraft, user_aircraft, user "
+        "SELECT aircraft.carbon_emission FROM aircraft, user_aircraft, user "
         "WHERE user_aircraft.aircraft_id = aircraft.id "
         "AND user_aircraft.user_id = user.id "
         f"AND user_aircraft.id = {number}")
@@ -382,11 +381,11 @@ def game_play(number, max_range, capacity, distance,
     cursor.execute(f"UPDATE user SET balance = balance + {total_income} "
                    f"WHERE name = '{user_info['username']}'")
     cursor.execute(
-        "UPDATE user SET total_amount = total_amount + {total_income} "
+        f"UPDATE user SET total_amount = total_amount + {total_income} "
         f"WHERE name = '{user_info['username']}'")
     cursor.close()
     connection.close()
-    flying.flying()
+    #flying.flying()
 
     if refuel_cost:
         print(
@@ -426,7 +425,7 @@ def store_menu():
                              "For going back to the main menu, please press enter. ")
     if shop_menu_choice == None:
         menu()
-        elif
+
 
 
 
