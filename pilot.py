@@ -471,7 +471,7 @@ def store_menu():
                                     user_id = cursor.fetchone()[0]
                                     cursor.execute("INSERT INTO user_aircraft (user_id, aircraft_id) "
                                                    f"VALUES ({user_id}, {aircraft_id})")
-                                    print("Congratulations, you have bought a new plane.")
+                                    print("Congratulations, you have bought a new plane！")
                                 else:
                                     print("You do not have enough balance.")
                             else:
