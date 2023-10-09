@@ -398,7 +398,19 @@ def game_play(number, max_range, capacity, distance,
         f"Total cost was: {total_cost}")
     game_menu()
 
-def store_menu():
+
+ def store_main_interface():
+    cursor = connection.cursor()
+    cursor.execute(
+        "SELECT id, name, passenger_capacity, "
+        "flight_range, price, carbon_emission FROM aircraft"
+        )
+    result = cursor.fetchall()
+    headers = ["id", "name", "passenger capacity", "flight range", "price", "carbon emission"]
+    table = tabulate(result, headers, tablefmt="grid")
+    print(table)
+
+def store_menu(username):
     """
     Display all the planes on sale, include:
         - An ascii picture,
@@ -412,22 +424,17 @@ def store_menu():
     Display sub menu:
     (Store Menu: Enter the plane number to buy, or press Q. Go Back)
     """
-    connection = get_database_connection()
-    while True:
-        def store_main_interface():
-            cursor = connection.cursor()
-            cursor.execute(
-                "SELECT id, name, passenger_capacity, "
-                "flight_range, price, carbon_emission FROM aircraft"
-            )
-            result = cursor.fetchall()
-            headers = ["id", "name", "passenger capacity", "flight range", "price", "carbon emission"]
-            table = tabulate(result, headers, tablefmt="grid")
-            print(table)
+    #connection = get_database_connection()
 
+    while True:
         store_main_interface()
         shop_menu_choice = input("For checking aircraft image and purchasing, please enter the aircraft's id.\n"
                                  "For going back to the main menu, please press enter. ")
+        cursor = connection.cursor()
+        cursor.execute("SELECT balance FROM user "
+                       f"WHERE name = '{username}'")
+        current_balance = cursor.fetchone()[0]
+        print(f"Your current balance is {current_balance}.")
         if not shop_menu_choice:
             break
         try:
@@ -472,6 +479,7 @@ def store_menu():
                                     cursor.execute("INSERT INTO user_aircraft (user_id, aircraft_id) "
                                                    f"VALUES ({user_id}, {aircraft_id})")
                                     print("Congratulations, you have bought a new plane！")
+                                    print(f"Now, your balance is {new_balance}.")
                                 else:
                                     print("You do not have enough balance.")
                             else:
@@ -509,6 +517,9 @@ def gallery_menu():
     Display sub menu:
     (Gallery Menu: Press Q. Go Back)
     """
+    store_main_interface()
+
+
     pass
 
 
