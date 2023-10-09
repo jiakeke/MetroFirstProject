@@ -317,7 +317,7 @@ def game_menu():
             continue
 
         elif number == 'Q':
-            return menu()
+            break
 
         else:
             print("Invalid choice. Please try again.")
