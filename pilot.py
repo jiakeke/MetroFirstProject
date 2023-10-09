@@ -360,6 +360,10 @@ def game_play(number, max_range, capacity, distance,
     carbon_cost = carbon_emission * carbon_coefficient
     fuel_cost = distance * 2.5
     total_cost = (fuel_cost + carbon_cost) * get_weather_index(latitude)[1]
+    cursor.execute(
+        "UPDATE user "
+        f"SET carbon_emission = carbon_emission + {carbon_emission} "
+        f"WHERE name = '{user_info['username']}'")
 
     refuel_cost = 0
     refuel_times = 0
