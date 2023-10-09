@@ -175,7 +175,8 @@ def tutorial():
     distance = 255.96
     passenger = 10
     reward = 1000
-    return start_airport, end_airport, distance, passenger, reward
+    latitude = "tutorial"
+    return start_airport, end_airport, distance, passenger, reward, latitude
 
 def calculate_carbon_emission(distance):
     """
@@ -230,6 +231,8 @@ def get_weather_index(latitude):
         5: ('Snow', 1.2),
         6: ('Thunderstorm', 1.2)
     }
+    if latitude == "tutorial":
+        return weather_setting[1]
     weather_index = weather_setting[1]
     if random.random() <= 0.20:
         weather_index = weather_setting[2]
@@ -375,7 +378,7 @@ def game_play(number, max_range, capacity, distance,
     if passenger > capacity:
         print(
             "Task failed! "
-            "The number of passengers exceeds your plane's capacity.")
+            "The number of passengers exceeds your plane's capacity.\n")
         return game_menu()
 
     total_income = reward - total_cost
@@ -395,7 +398,7 @@ def game_play(number, max_range, capacity, distance,
 
     print(
         f"Task successful!\nYou earned: {total_income}\n"
-        f"Total cost was: {total_cost}")
+        f"Total cost was: {total_cost}\n")
     game_menu()
 
 def store_menu():
