@@ -416,19 +416,79 @@ def store_menu():
     (Store Menu: Enter the plane number to buy, or press Q. Go Back)
     """
     connection = get_database_connection()
-    cursor = connection.cursor()
-    cursor.execute(
-        "SELECT id, name, passenger_capacity, "
-        "flight_range, price, carbon_emission FROM aircraft"
-    )
-    result = cursor.fetchall()
-    headers = ["id", "name", "passenger capacity", "flight range", "price", "carbon emission"]
-    table = tabulate(result, headers, tablefmt="grid")
-    print(table)
-    shop_menu_choice = input("For checking aircraft image and purchasing, please enter the aircraft's id.\n"
-                             "For going back to the main menu, please press enter. ")
-    if shop_menu_choice == None:
-        menu()
+    while True:
+        def store_main_interface():
+            cursor = connection.cursor()
+            cursor.execute(
+                "SELECT id, name, passenger_capacity, "
+                "flight_range, price, carbon_emission FROM aircraft"
+            )
+            result = cursor.fetchall()
+            headers = ["id", "name", "passenger capacity", "flight range", "price", "carbon emission"]
+            table = tabulate(result, headers, tablefmt="grid")
+            print(table)
+
+        store_main_interface()
+        shop_menu_choice = input("For checking aircraft image and purchasing, please enter the aircraft's id.\n"
+                                 "For going back to the main menu, please press enter. ")
+        if not shop_menu_choice:
+            break
+        try:
+            aircraft_id = int(shop_menu_choice)
+            if aircraft_id > 0 and aircraft_id < 10:
+                cursor = connection.cursor()
+                cursor.execute("SELECT image FROM  aircraft WHERE id = %s", (aircraft_id,))
+                aircraft_image = cursor.fetchone()
+                for item in aircraft_image:
+                    print(item)
+                aircraft_action = input("1. purchase\n"
+                                        "2. Go back to store menu\n")
+                try:
+                    aircraft_choice = int(aircraft_action)
+                    if aircraft_choice == 1:
+                        cursor.execute("SELECT aircraft_id, user_id FROM user_aircraft"
+                                       " JOIN user ON user.id = user_aircraft.user_id"
+                                       f" WHERE name = '{username}'"
+                                       f" AND aircraft_id = {aircraft_id}")
+                        result = cursor.fetchone()
+                        aircraft_repository = None
+                        if result is not None:
+                            aircraft_repository = result[0]
+                            user_id = result[1]
+                            print("You already have this plane.")
+                        else:
+
+                            cursor.execute("SELECT price FROM aircraft"
+                                           f" WHERE id = {aircraft_id}")
+                            aircraft_price = float(cursor.fetchone()[0])
+                            if aircraft_price:
+                                cursor.execute("SELECT balance FROM user"
+                                               f" WHERE name = '{username}'")
+                                user_balance = float(cursor.fetchone()[0])
+                                if user_balance >= aircraft_price:
+                                    new_balance = user_balance - aircraft_price
+                                    cursor.execute("UPDATE user"
+                                                   f" SET balance = {new_balance} "
+                                                   f"WHERE name = '{username}'")
+                                    cursor.execute(f"SELECT id FROM user WHERE name = '{username}'")
+                                    user_id = cursor.fetchone()[0]
+                                    cursor.execute("INSERT INTO user_aircraft (user_id, aircraft_id) "
+                                                   f"VALUES ({user_id}, {aircraft_id})")
+                                    print("Congratulations, you have bought a new plane！")
+                                else:
+                                    print("You do not have enough balance.")
+                            else:
+                                print("Aircraft not found.")
+                    elif aircraft_choice == 2:
+                        continue
+                    else:
+                        print("Invalid input, please enter 1 or 2.")
+                except ValueError:
+                    print("Invalid input, please enter 1 or 2.")
+            else:
+                print("Aircraft not found.")
+        except ValueError:
+            print("Invalid input, please enter 1 to 9.")
 
 
 
