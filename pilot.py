@@ -175,7 +175,8 @@ def tutorial():
     distance = 255.96
     passenger = 10
     reward = 1000
-    return start_airport, end_airport, distance, passenger, reward
+    latitude = "tutorial"
+    return start_airport, end_airport, distance, passenger, reward, latitude
 
 def calculate_carbon_emission(distance):
     """
@@ -230,6 +231,8 @@ def get_weather_index(latitude):
         5: ('Snow', 1.2),
         6: ('Thunderstorm', 1.2)
     }
+    if latitude == "tutorial":
+        return weather_setting[1]
     weather_index = weather_setting[1]
     if random.random() <= 0.20:
         weather_index = weather_setting[2]
@@ -321,7 +324,6 @@ def game_menu():
 
         else:
             print("Invalid choice. Please try again.")
-            return game_menu()
 
 
 
@@ -375,18 +377,23 @@ def game_play(number, max_range, capacity, distance,
     if passenger > capacity:
         print(
             "Task failed! "
-            "The number of passengers exceeds your plane's capacity.")
-        return game_menu()
+            "The number of passengers exceeds your plane's capacity.\n")
+        return False
 
     total_income = reward - total_cost
-    cursor.execute(f"UPDATE user SET balance = balance + {total_income} "
-                   f"WHERE name = '{user_info['username']}'")
-    cursor.execute(
-        f"UPDATE user SET total_amount = total_amount + {total_income} "
-        f"WHERE name = '{user_info['username']}'")
-    cursor.close()
-    connection.close()
-    flying.flying()
+    try:
+        cursor.execute(f"UPDATE user SET balance = balance + {total_income} "
+                       f"WHERE name = '{user_info['username']}'")
+        cursor.execute(
+            f"UPDATE user SET total_amount = total_amount + {total_income} "
+            f"WHERE name = '{user_info['username']}'")
+        connection.commit()
+        cursor.close()
+        connection.close()
+    except mysql.connector.Error as err:
+            print(err)
+            connection.rollback()
+    #flying.flying()
 
     if refuel_cost:
         print(
@@ -395,8 +402,9 @@ def game_play(number, max_range, capacity, distance,
 
     print(
         f"Task successful!\nYou earned: {total_income}\n"
-        f"Total cost was: {total_cost}")
-    game_menu()
+        f"Total cost was: {total_cost}\n")
+    return True
+
 
 
  def store_main_interface():
