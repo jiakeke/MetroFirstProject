@@ -18,9 +18,6 @@ import random
 import flying
 from tabulate import tabulate
 
-
-
-
 program = os.path.basename(sys.argv[0])
 
 db_name = 'pilot'
@@ -178,6 +175,7 @@ def tutorial():
     latitude = "tutorial"
     return start_airport, end_airport, distance, passenger, reward, latitude
 
+
 def calculate_carbon_emission(distance):
     """
     Calculate the carbon emission based on the given distance.
@@ -222,6 +220,7 @@ def generate_new_task():
 
         return new_task
 
+
 def get_weather_index(latitude):
     weather_setting = {
         1: ('Normal', 1.0),
@@ -245,7 +244,6 @@ def get_weather_index(latitude):
     elif latitude <= 30 and random.random() <= 0.15:
         weather_index = weather_setting[6]
     return weather_index
-
 
 
 def get_user_aircraft(username):
@@ -326,7 +324,6 @@ def game_menu():
             print("Invalid choice. Please try again.")
 
 
-
 def game_play(number, max_range, capacity, distance,
               passenger, reward, latitude):
     """
@@ -360,7 +357,7 @@ def game_play(number, max_range, capacity, distance,
 
     carbon_emission = calculate_carbon_emission(distance)
     carbon_cost = carbon_emission * carbon_coefficient
-    fuel_cost = distance * 2.5
+    fuel_cost = distance * 2
     total_cost = (fuel_cost + carbon_cost) * get_weather_index(latitude)[1]
     cursor.execute(
         "UPDATE user "
@@ -393,7 +390,7 @@ def game_play(number, max_range, capacity, distance,
     except mysql.connector.Error as err:
             print(err)
             connection.rollback()
-    #flying.flying()
+    flying.flying()
 
     if refuel_cost:
         print(
@@ -406,8 +403,8 @@ def game_play(number, max_range, capacity, distance,
     return True
 
 
-
- def store_main_interface():
+def store_main_interface():
+    connection = get_database_connection()
     cursor = connection.cursor()
     cursor.execute(
         "SELECT id, name, passenger_capacity, "
@@ -417,6 +414,7 @@ def game_play(number, max_range, capacity, distance,
     headers = ["id", "name", "passenger capacity", "flight range", "price", "carbon emission"]
     table = tabulate(result, headers, tablefmt="grid")
     print(table)
+
 
 def store_menu(username):
     """
@@ -432,7 +430,7 @@ def store_menu(username):
     Display sub menu:
     (Store Menu: Enter the plane number to buy, or press Q. Go Back)
     """
-    #connection = get_database_connection()
+    connection = get_database_connection()
 
     while True:
         store_main_interface()
