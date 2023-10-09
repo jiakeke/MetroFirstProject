@@ -31,6 +31,7 @@ if os.path.exists('config.py'):
 
 user_info = {'username': ''}
 
+
 def get_database_connection():
     connection = mysql.connector.connect(
         host=db_host,
@@ -565,8 +566,10 @@ def play():
     else:
         byebye()
 
+
 def run_command(cmd):
     os.system(cmd)
+
 
 def main():
     if len(sys.argv) == 1:
@@ -577,6 +580,7 @@ def main():
         method()
     else:
         play()
+
 
 def usage():
     print(__doc__ % {"program": program})
