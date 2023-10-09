@@ -86,10 +86,11 @@ def login_or_register():
                         "INSERT INTO user (name, password, status) "
                         f"VALUES ('{username}', '{password}', true)")
                     cursor.execute(
-                        "INSERT INTO "
-                        "user_aircraft (user_id, aircraft_id) "
-                        "SELECT id, 1 FROM user "
-                        f"WHERE name = '{username}'")
+                        "INSERT INTO user_aircraft (user_id, aircraft_id) "
+                        "SELECT user.id, aircraft.id "
+                        "FROM user, aircraft "
+                        f"WHERE u.name = '{username}' "
+                        "AND a.plane_key = 'sky_hawk_100';")
                     print("User registered and login successful!"
                           f"\nWelcome {username}!")
                     connection.commit()
