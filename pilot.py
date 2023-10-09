@@ -355,8 +355,6 @@ def game_play(number, max_range, capacity, distance,
         f"AND user_aircraft.id = {number}")
     result = cursor.fetchone()
     carbon_coefficient = result[0]
-    cursor.close()
-    connection.close()
 
     carbon_emission = calculate_carbon_emission(distance)
     carbon_cost = carbon_emission * carbon_coefficient
@@ -377,6 +375,13 @@ def game_play(number, max_range, capacity, distance,
         return game_menu()
 
     total_income = reward - total_cost
+    cursor.execute(f"UPDATE user SET balance = balance + {total_income} "
+                   f"WHERE name = '{user_info['username']}'")
+    cursor.execute(
+        "UPDATE user SET total_amount = total_amount + {total_income} "
+        f"WHERE name = '{user_info['username']}'")
+    cursor.close()
+    connection.close()
     flying.flying()
 
     if refuel_cost:
