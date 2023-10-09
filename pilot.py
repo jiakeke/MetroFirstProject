@@ -324,7 +324,6 @@ def game_menu():
 
         else:
             print("Invalid choice. Please try again.")
-            return game_menu()
 
 
 
@@ -379,17 +378,22 @@ def game_play(number, max_range, capacity, distance,
         print(
             "Task failed! "
             "The number of passengers exceeds your plane's capacity.\n")
-        return game_menu()
+        return False
 
     total_income = reward - total_cost
-    cursor.execute(f"UPDATE user SET balance = balance + {total_income} "
-                   f"WHERE name = '{user_info['username']}'")
-    cursor.execute(
-        f"UPDATE user SET total_amount = total_amount + {total_income} "
-        f"WHERE name = '{user_info['username']}'")
-    cursor.close()
-    connection.close()
-    flying.flying()
+    try:
+        cursor.execute(f"UPDATE user SET balance = balance + {total_income} "
+                       f"WHERE name = '{user_info['username']}'")
+        cursor.execute(
+            f"UPDATE user SET total_amount = total_amount + {total_income} "
+            f"WHERE name = '{user_info['username']}'")
+        connection.commit()
+        cursor.close()
+        connection.close()
+    except mysql.connector.Error as err:
+            print(err)
+            connection.rollback()
+    #flying.flying()
 
     if refuel_cost:
         print(
@@ -399,7 +403,8 @@ def game_play(number, max_range, capacity, distance,
     print(
         f"Task successful!\nYou earned: {total_income}\n"
         f"Total cost was: {total_cost}\n")
-    game_menu()
+    return True
+
 
 def store_menu():
     """
