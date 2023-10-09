@@ -385,7 +385,7 @@ def game_play(number, max_range, capacity, distance,
         f"WHERE name = '{user_info['username']}'")
     cursor.close()
     connection.close()
-    #flying.flying()
+    flying.flying()
 
     if refuel_cost:
         print(
