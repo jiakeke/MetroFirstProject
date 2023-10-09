@@ -378,18 +378,23 @@ def game_play(number, max_range, capacity, distance,
         return False
 
     total_income = reward - total_cost
-    try:
-        cursor.execute(f"UPDATE user SET balance = balance + {total_income} "
-                       f"WHERE name = '{user_info['username']}'")
-        cursor.execute(
-            f"UPDATE user SET total_amount = total_amount + {total_income} "
-            f"WHERE name = '{user_info['username']}'")
-        connection.commit()
-        cursor.close()
-        connection.close()
-    except mysql.connector.Error as err:
-            print(err)
-            connection.rollback()
+    if total_income > 0:
+        try:
+            cursor.execute(f"UPDATE user SET balance = balance + {total_income} "
+                           f"WHERE name = '{user_info['username']}'")
+            cursor.execute(
+                f"UPDATE user SET total_amount = total_amount + {total_income} "
+                f"WHERE name = '{user_info['username']}'")
+            connection.commit()
+            cursor.close()
+            connection.close()
+        except mysql.connector.Error as err:
+                print(err)
+                connection.rollback()
+    else:
+        print(
+            "Task failed! "
+            "Your cost is larger than profit.\n")
     flying.flying()
 
     if refuel_cost:
