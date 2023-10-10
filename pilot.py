@@ -15,10 +15,39 @@ import sys
 from geopy.distance import geodesic
 import random
 
-import flying
+from flying import flying, clear_screen
 from tabulate import tabulate
 
 program = os.path.basename(sys.argv[0])
+
+game_name = """
+=============================================
+ _____
+|  ___|
+| |__ _   _ _ __ ___  _ __   ___  __ _ _ __
+|  __| | | | '__/ _ \| '_ \ / _ \/ _` | '_ \\
+| |__| |_| | | | (_) | |_) |  __/ (_| | | | |
+\____/\__,_|_|  \___/| .__/ \___|\__,_|_| |_|
+                     | |
+                     |_|
+  ___  _      _ _
+ / _ \(_)    | (_)
+/ /_\ \_ _ __| |_ _ __   ___
+|  _  | | '__| | | '_ \ / _ \\
+| | | | | |  | | | | | |  __/
+\_| |_/_|_|  |_|_|_| |_|\___|
+
+
+ _____
+|_   _|
+  | |_   _  ___ ___   ___  _ __
+  | | | | |/ __/ _ \ / _ \| '_ \\
+  | | |_| | (_| (_) | (_) | | | |
+  \_/\__, |\___\___/ \___/|_| |_|
+      __/ |
+     |___/
+=============================================
+"""
 
 db_name = 'pilot'
 db_user = ''
@@ -58,15 +87,22 @@ def login_or_register():
     cursor = connection.cursor()
 
     while True:
-        username = input("Enter username: ")
-        password = input("Enter password: ")
+        print('======== Login OR Register ========')
+        print()
+        username = input("Username: ")
+        password = input("Password: ")
 
         cursor.execute(f"SELECT password FROM user WHERE name = '{username}'")
         result = cursor.fetchone()
 
         if result:
             if result[0] == password:
-                print(f"Login successful!\nWelcome {username}!")
+                clear_screen()
+                print()
+                print('======== European Airline Tycoon ========')
+                print()
+                print(f"Login successful!\n\nWelcome {username}!\n")
+                print()
                 cursor.close()
                 connection.close()
                 user_info['username'] = username
@@ -74,7 +110,7 @@ def login_or_register():
             else:
                 print("Incorrect password. Please try again.")
         else:
-            user_choice = input("A non-existent username has been detected. "
+            user_choice = input("Username Not Found. "
                                 "Do you want to register?"
                                 "(\nEnter yes to register, "
                                 "any other to login again):\n")
@@ -90,8 +126,14 @@ def login_or_register():
                         "FROM user, aircraft "
                         f"WHERE user.name = '{username}' "
                         "AND plane_key = 'sky_hawk_100';")
+                    clear_screen()
+                    print()
+                    print('======== European Airline Tycoon ========')
+                    print()
                     print("User registered and login successful!"
-                          f"\nWelcome {username}!")
+                          f"\n\nWelcome {username}!")
+                    print()
+                    print()
                     connection.commit()
                     cursor.close()
                     connection.close()
@@ -400,7 +442,7 @@ def game_play(number, max_range, capacity, distance,
                    "AND user_aircraft.user_id = user.id "
                    f"AND user_aircraft.id = {number}")
     result = cursor.fetchone()
-    flying.flying(result[0])
+    flying(result[0])
     cursor.close()
     connection.close()
 
@@ -562,6 +604,8 @@ def goodbye():
 
 def play():
     #Set username as a global variable and do not modify it.
+    clear_screen()
+    print(game_name)
     login_or_register()
     if user_info['username']:
         menu()
