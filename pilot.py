@@ -582,9 +582,9 @@ def gallery_menu():
                    f"AND user.name = '{username}'")
     result = cursor.fetchall()
     headers = cursor.column_names
-    headers = ['Number'] + [item.replace('_', ' ').title() for item in headers]
-    content = [[num] + list(item)
-              for num, item in enumerate(result, 1)]
+    headers = ['Number'] + [item.replace('_', ' ').title()
+                            for item in headers]
+    content = [[num] + list(item) for num, item in enumerate(result, 1)]
     plane_table = tabulate(content, headers, tablefmt="grid")
     print(plane_table)
     while True:
