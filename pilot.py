@@ -18,6 +18,7 @@ import random
 
 from flying import flying, clear_screen
 from tabulate import tabulate
+from colorama import Fore, Style
 
 program = os.path.basename(sys.argv[0])
 
@@ -674,6 +675,18 @@ def ranking_menu():
                                         for item in ranking_header]
         content = [[num] + list(item) for num, item in
                    enumerate(result, 1)]
+        ranking_table = tabulate(content, ranking_header, tablefmt="grid")
+        user_row = None
+        for num, item in enumerate(result, 1):
+            row = [num] + list(item)
+            content.append(row)
+            if item[0] == username:
+                user_row = row
+        if user_row:
+            user_row_formatted = [Fore.BLUE + Style.BRIGHT + str(cell) + Style.RESET_ALL for
+                                  idx, cell in enumerate(user_row)]
+            content[content.index(user_row)] = user_row_formatted
+
         ranking_table = tabulate(content, ranking_header, tablefmt="grid")
         print()
         print("========== Ranking ==========")
