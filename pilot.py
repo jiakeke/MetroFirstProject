@@ -64,31 +64,28 @@ if os.path.exists('config.py'):
 user_info = {'username': ''}
 
 
+def print_lines(text):
+    print()
+    print(text)
+    print()
+
 def print_cover():
     clear_screen()
-    print()
-    print(game_name_ascii)
-    print()
+    print_lines(game_name_ascii)
 
 def print_header():
     clear_screen()
-    print()
-    print(f"{'#'*10} {game_name} {'#'*10}")
-    print()
+    print_lines(f"{'#'*10} {game_name} {'#'*10}")
 
 def print_title(text):
-    print()
-    print(f"{'='*10} {text} {'='*10}")
-    print()
+    print_lines(f"{'='*10} {text} {'='*10}")
 
 def print_msg(text):
-    print()
-    print(text)
-    print()
+    print_lines(text)
 
 def delayed_back(text, waiting=5):
     print(text)
-    time.sleep(waiting)
+    input('Press the Enter key to continue...')
 
 def get_database_connection():
     connection = mysql.connector.connect(
@@ -391,7 +388,7 @@ def game_menu():
             game_play(
                 selected_aircraft_id, max_range, capacity, *game_props[2:])
 
-            delayed_back('A new game will start in 5 seconds')
+            delayed_back('A new game is about to start.')
 
         elif number == 'R':
             continue
