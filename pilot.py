@@ -308,7 +308,7 @@ def game_menu():
             "Please choose the plane number to complete the task"
             "\nR to refresh a new task"
             "\nQ to quit to menu\n"
-        )
+        ).upper()
         if number.isdigit() and 0 < int(number) <= len(user_aircraft):
             selected_aircraft_id = user_aircraft[int(number) - 1][0]
             # Start game
