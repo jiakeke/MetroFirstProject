@@ -610,23 +610,26 @@ def gallery_menu():
     Display sub menu:
     (Gallery Menu: Press Q. Go Back)
     """
-    username = user_info['username']
-    connection = get_database_connection()
-    cursor = connection.cursor()
-    cursor.execute("SELECT aircraft.name, passenger_capacity, flight_range, "
-                   "price, aircraft.carbon_emission, image "
-                   "FROM aircraft, user_aircraft, user "
-                   "WHERE user.id = user_id "
-                   "AND aircraft.id = aircraft_id "
-                   f"AND user.name = '{username}'")
-    result = cursor.fetchall()
-    headers = cursor.column_names
-    headers = ['Number'] + [item.replace('_', ' ').title()
-                            for item in headers]
-    content = [[num] + list(item[: -1]) for num, item in enumerate(result, 1)]
-    plane_table = tabulate(content, headers, tablefmt="grid")
-    print(plane_table)
     while True:
+        print_header()
+        username = user_info['username']
+        connection = get_database_connection()
+        cursor = connection.cursor()
+        cursor.execute(
+            "SELECT aircraft.name, passenger_capacity, flight_range, "
+            "price, aircraft.carbon_emission, image "
+            "FROM aircraft, user_aircraft, user "
+            "WHERE user.id = user_id "
+            "AND aircraft.id = aircraft_id "
+            f"AND user.name = '{username}'")
+        result = cursor.fetchall()
+        headers = cursor.column_names
+        headers = ['Number'] + [item.replace('_', ' ').title()
+                                for item in headers]
+        content = [[num] + list(item[: -1]) for num, item in
+                   enumerate(result, 1)]
+        plane_table = tabulate(content, headers, tablefmt="grid")
+        print(plane_table)
         choice = input("For checking aircraft image and purchasing, "
                        "please enter the number of the aircraft.\n "
                        "For going back to the main menu, please enter Q."
@@ -635,10 +638,14 @@ def gallery_menu():
             break
         elif choice.isdigit():
             choice = int(choice)
-            if choice >= 0 and choice < len(result):
+            if choice >= 0 and choice <= len(result):
+                print_header()
                 _plane = result[choice - 1]
                 _image = _plane[-1]
                 print(_image)
+                _choice = input("Press enter to go back\n")
+            else:
+                print(f"Invalid input, please enter 1 to {len(result)}.")
 
 
 def ranking_menu():
