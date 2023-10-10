@@ -358,8 +358,9 @@ def game_play(number, max_range, capacity, distance,
 
     carbon_emission = calculate_carbon_emission(distance)
     carbon_cost = carbon_emission * carbon_coefficient
-    fuel_cost = distance * 2
-    total_cost = (fuel_cost + carbon_cost) * get_weather_index(latitude)[1]
+    fuel_cost = distance * 2.2
+    weather_index = get_weather_index(latitude)
+    total_cost = (fuel_cost + carbon_cost) * weather_index[1]
     cursor.execute(
         "UPDATE user "
         f"SET carbon_emission = carbon_emission + {carbon_emission} "
@@ -403,6 +404,8 @@ def game_play(number, max_range, capacity, distance,
             f"You had to refuel {refuel_times} times during your trip. "
             f"This cost an additional {refuel_cost} coins.")
 
+    print(f"You encountered {weather_index[0]} weather "
+          "at your destination airport")
     print(
         f"Task successful!\nYou earned: {total_income}\n"
         f"Total cost was: {total_cost}\n")
