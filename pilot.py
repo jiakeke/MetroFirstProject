@@ -661,7 +661,27 @@ def ranking_menu():
     Display sub menu:
     (Ranking Menu: Press Q. Go Back)
     """
-    pass
+    while True:
+        print_header()
+        username = user_info['username']
+        connection = get_database_connection()
+        cursor = connection.cursor()
+        cursor.execute("SELECT name, total_amount FROM user "
+                       "ORDER BY total_amount DESC")
+        result = cursor.fetchall()
+        ranking_header = cursor.column_names
+        ranking_header = ["Ranking"] + [item.replace("_", " ").title()
+                                        for item in ranking_header]
+        content = [[num] + list(item) for num, item in
+                   enumerate(result, 1)]
+        ranking_table = tabulate(content, ranking_header, tablefmt="grid")
+        print()
+        print("========== Ranking ==========")
+        print()
+        print(ranking_table)
+        choice = input("Press enter to go back to the main menu.")
+        if not choice:
+            break
 
 
 def goodbye():
