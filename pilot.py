@@ -430,12 +430,6 @@ def get_planes_table(cursor):
     return plane_table, planes
 
 
-def get_user_planes(cursor):
-    cursor.execute("SELECT aircraft_id FROM user_aircraft"
-                  f" WHERE user_id='{user_id}'")
-    user_plane_ids = [item[0] for item in cursor.fetchall()]
-    return user_plane_ids
-
 def store_menu():
     """
     Display all the planes on sale, include:
@@ -454,7 +448,7 @@ def store_menu():
     connection = get_database_connection()
     cursor = connection.cursor()
     cursor.execute(
-        f"SELECT id FROM user WHERE name = '{username}' limit 1")
+        f"SELECT id FROM user WHERE name = '{username}'")
     user_id = cursor.fetchone()[0]
 
     plane_table, planes = get_planes_table(cursor)
@@ -464,7 +458,9 @@ def store_menu():
         _balance = get_user_balance(cursor)
         print(f"Current balance: {_balance}")
 
-        user_plane_ids = get_user_planes(cursor)
+        cursor.execute("SELECT aircraft_id FROM user_aircraft"
+                      f" WHERE user_id='{user_id}'")
+        user_plane_ids = [item[0] for item in cursor.fetchall()]
 
         shop_menu_choice = input(
             "For checking aircraft image and purchasing, please enter the "
