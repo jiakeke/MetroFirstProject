@@ -369,6 +369,7 @@ def game_menu():
         print(f"Offer: [{game_props[4]} coins].")
         print()
         print("Tip: Destination weather may affect flight costs.")
+        print("     Refuel cost is 50 coins each time.")
         print()
         print_title('Actions')
         user_aircraft = get_user_aircraft(user_info['username'])
@@ -629,6 +630,9 @@ def gallery_menu():
         content = [[num] + list(item[: -1]) for num, item in
                    enumerate(result, 1)]
         plane_table = tabulate(content, headers, tablefmt="grid")
+        print()
+        print("========== Gallery ==========")
+        print()
         print(plane_table)
         choice = input("For checking aircraft image and purchasing, "
                        "please enter the number of the aircraft.\n "
