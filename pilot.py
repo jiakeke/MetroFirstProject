@@ -31,6 +31,7 @@ if os.path.exists('config.py'):
 
 user_info = {'username': ''}
 
+
 def get_database_connection():
     connection = mysql.connector.connect(
         host=db_host,
@@ -378,18 +379,23 @@ def game_play(number, max_range, capacity, distance,
         return False
 
     total_income = reward - total_cost
-    try:
-        cursor.execute(f"UPDATE user SET balance = balance + {total_income} "
-                       f"WHERE name = '{user_info['username']}'")
-        cursor.execute(
-            f"UPDATE user SET total_amount = total_amount + {total_income} "
-            f"WHERE name = '{user_info['username']}'")
-        connection.commit()
-        cursor.close()
-        connection.close()
-    except mysql.connector.Error as err:
-            print(err)
-            connection.rollback()
+    if total_income > 0:
+        try:
+            cursor.execute(f"UPDATE user SET balance = balance + {total_income} "
+                           f"WHERE name = '{user_info['username']}'")
+            cursor.execute(
+                f"UPDATE user SET total_amount = total_amount + {total_income} "
+                f"WHERE name = '{user_info['username']}'")
+            connection.commit()
+            cursor.close()
+            connection.close()
+        except mysql.connector.Error as err:
+                print(err)
+                connection.rollback()
+    else:
+        print(
+            "Task failed! "
+            "Your cost is larger than profit.\n")
     flying.flying()
 
     if refuel_cost:
@@ -558,8 +564,10 @@ def play():
     else:
         byebye()
 
+
 def run_command(cmd):
     os.system(cmd)
+
 
 def main():
     if len(sys.argv) == 1:
@@ -570,6 +578,7 @@ def main():
         method()
     else:
         play()
+
 
 def usage():
     print(__doc__ % {"program": program})
