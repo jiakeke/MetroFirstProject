@@ -12,6 +12,7 @@ Common Commands:
 import mysql.connector
 import os
 import sys
+import time
 from geopy.distance import geodesic
 import random
 
@@ -20,7 +21,9 @@ from tabulate import tabulate
 
 program = os.path.basename(sys.argv[0])
 
-game_name = """
+game_name = 'European Airline Tycoon'
+
+game_name_ascii = """
 =============================================
  _____
 |  ___|
@@ -61,6 +64,32 @@ if os.path.exists('config.py'):
 user_info = {'username': ''}
 
 
+def print_cover():
+    clear_screen()
+    print()
+    print(game_name_ascii)
+    print()
+
+def print_header():
+    clear_screen()
+    print()
+    print(f"{'#'*10} {game_name} {'#'*10}")
+    print()
+
+def print_title(text):
+    print()
+    print(f"{'='*10} {text} {'='*10}")
+    print()
+
+def print_msg(text):
+    print()
+    print(text)
+    print()
+
+def delayed_back(text, waiting=5):
+    print(text)
+    time.sleep(waiting)
+
 def get_database_connection():
     connection = mysql.connector.connect(
         host=db_host,
@@ -83,12 +112,12 @@ def login_or_register():
 
     Return the username after logging in.
     """
+    print_cover()
     connection = get_database_connection()
     cursor = connection.cursor()
 
     while True:
-        print('======== Login OR Register ========')
-        print()
+        print_title('Login OR Register')
         username = input("Username: ")
         password = input("Password: ")
 
@@ -97,12 +126,9 @@ def login_or_register():
 
         if result:
             if result[0] == password:
-                clear_screen()
-                print()
-                print('======== European Airline Tycoon ========')
-                print()
-                print(f"Login successful!\n\nWelcome {username}!\n")
-                print()
+                print_header()
+                print_title(f"Login successful!")
+                print_msg(f"Welcome {username}!")
                 cursor.close()
                 connection.close()
                 user_info['username'] = username
@@ -126,14 +152,9 @@ def login_or_register():
                         "FROM user, aircraft "
                         f"WHERE user.name = '{username}' "
                         "AND plane_key = 'sky_hawk_100';")
-                    clear_screen()
-                    print()
-                    print('======== European Airline Tycoon ========')
-                    print()
-                    print("User registered and login successful!"
-                          f"\n\nWelcome {username}!")
-                    print()
-                    print()
+                    print_header()
+                    print_title("User registered and login successful!")
+                    print_msg(f"Welcome {username}!")
                     connection.commit()
                     cursor.close()
                     connection.close()
@@ -160,14 +181,19 @@ def menu():
         '5': {'name': 'Log out', 'method': login_or_register},
         '6': {'name': 'Quit', 'method': goodbye}
     }
+    first_time = True
 
     while True:
-        print("--- Main manu ---")
+        if first_time:
+            first_time = False
+        else:
+            print_header()
+        print_title("Main manu")
         for key, value in menus.items():
             print(f"{key}. {value['name']}")
+        print()
         number = input(
-            "Please choose the number in the menu to enter the corresponding "
-            "section:"
+            "Please select the item number from the menu: \n"
         )
         if number in menus:
             method = menus[number]['method']
@@ -319,6 +345,8 @@ def game_menu():
     """
 
     while True:
+        print_header()
+        print_title('Playing Game')
         max_range, capacity = get_user_props()
 
         connection = get_database_connection()
@@ -335,28 +363,34 @@ def game_menu():
         else:
             game_props = generate_new_task()
 
-        print(f"Fly from {game_props[0]} to {game_props[1]}. "
-              f"\nDistance: {game_props[2]} km "
-              f"\nCarry {game_props[3]} passengers "
-              f"for an offer of {game_props[4]} coins")
+        print(f"Fly from [{game_props[0]}] to [{game_props[1]}];")
+        print(f"Distance: [{game_props[2]} km];")
+        print(f"Passengers: [{game_props[3]}];")
+        print(f"Offer: [{game_props[4]} coins].")
+        print()
         print("Tip: Destination weather may affect flight costs.")
+        print()
+        print_title('Actions')
         user_aircraft = get_user_aircraft(user_info['username'])
         for idx, aircraft in enumerate(user_aircraft, 1):
             print(
-                f"{idx}. {aircraft[1]} "
-                f"- Range: {aircraft[2]}km "
-                f"- Capacity: {aircraft[3]} passengers")
+                f"{idx}. [{aircraft[1]}] "
+                f"- Range: [{aircraft[2]}] km "
+                f"- Capacity: [{aircraft[3]}] passengers")
 
+        print()
         number = input(
             "Please choose the plane number to complete the task"
-            "\nR to refresh a new task"
-            "\nQ to quit to menu\n"
+            "\n\nR to refresh a new task"
+            "\n\nQ to quit to menu\n"
         ).upper()
         if number.isdigit() and 0 < int(number) <= len(user_aircraft):
             selected_aircraft_id = user_aircraft[int(number) - 1][0]
             # Start game
             game_play(
                 selected_aircraft_id, max_range, capacity, *game_props[2:])
+
+            delayed_back('A new game will start in 5 seconds')
 
         elif number == 'R':
             continue
@@ -496,9 +530,11 @@ def store_menu():
     plane_table, planes = get_planes_table(cursor)
 
     while True:
+        print_header()
+        print_title('Shopping Center')
         print(plane_table)
         _balance = get_user_balance(cursor)
-        print(f"Current balance: {_balance}")
+        print_msg(f"Current balance: {_balance}")
 
         cursor.execute("SELECT aircraft_id FROM user_aircraft"
                       f" WHERE user_id='{user_id}'")
@@ -513,30 +549,33 @@ def store_menu():
             break
 
         if not shop_menu_choice.isdigit():
-            print("Invalid input, please enter 1 to {len(planes)}.")
+            delayed_back("Invalid input, please enter 1 to {len(planes)}.")
             continue
 
         choice_num = int(shop_menu_choice)
         if choice_num <= 0 or choice_num > len(planes):
-            print(f"Invalid input, please enter 1 to {len(planes)}.")
+            delayed_back(f"Invalid input, please enter 1 to {len(planes)}.")
             continue
 
         _plane = planes[choice_num - 1]
+        print_header()
+        print_title('Shoping Center')
+        print_msg(_plane[1])
         _image = _plane[-2]
-        print(_image)
+        print_msg(_image)
 
-        _choice = input("Buy(B) or Go back(Others)\n")
+        _choice = input("Press B to buy the plane or any other to go back\n")
         if _choice.lower() != 'b':
             continue
 
         aircraft_id = _plane[0]
         if aircraft_id in user_plane_ids:
-            print("You already have this plane.")
+            delayed_back("You already have this plane.")
             continue
 
         _price = float(_plane[4])
         if _balance < _price:
-            print("You do not have enough balance.")
+            delayed_back("You do not have enough balance.")
             continue
 
         new_balance = _balance - _price
@@ -554,7 +593,7 @@ def store_menu():
             print(err)
             connection.rollback()
 
-        print("Congratulations, you have bought a new plane！")
+        delayed_back("Congratulations, you have bought a new plane！")
 
 
 def gallery_menu():
@@ -599,8 +638,6 @@ def goodbye():
 
 def play():
     #Set username as a global variable and do not modify it.
-    clear_screen()
-    print(game_name)
     login_or_register()
     if user_info['username']:
         menu()
