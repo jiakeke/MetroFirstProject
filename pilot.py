@@ -513,7 +513,7 @@ def store_menu():
             break
 
         if not shop_menu_choice.isdigit():
-            print("Invalid input, please enter 1 to {len(planes)}.")
+            print(f"Invalid input, please enter 1 to {len(planes)}.")
             continue
 
         choice_num = int(shop_menu_choice)
@@ -571,7 +571,26 @@ def gallery_menu():
     Display sub menu:
     (Gallery Menu: Press Q. Go Back)
     """
-    pass
+    username = user_info['username']
+    connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute("SELECT aircraft.name, passenger_capacity, flight_range, "
+                   "price, aircraft.carbon_emission "
+                   "FROM aircraft, user_aircraft, user "
+                   "WHERE user.id = user_id "
+                   "AND aircraft.id = aircraft_id "
+                   f"AND user.name = '{username}'")
+    result = cursor.fetchall()
+    headers = cursor.column_names
+    headers = ['Number'] + [item.replace('_', ' ').title() for item in headers]
+    content = [[num] + list(item)
+              for num, item in enumerate(result, 1)]
+    plane_table = tabulate(content, headers, tablefmt="grid")
+    print(plane_table)
+    while True:
+        to_quit = input("Enter Q to quit to menu").upper()
+        if to_quit == "Q":
+            break
 
 
 def ranking_menu():
