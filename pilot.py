@@ -388,8 +388,6 @@ def game_play(number, max_range, capacity, distance,
                 f"UPDATE user SET total_amount = total_amount + {total_income} "
                 f"WHERE name = '{user_info['username']}'")
             connection.commit()
-            cursor.close()
-            connection.close()
         except mysql.connector.Error as err:
                 print(err)
                 connection.rollback()
@@ -397,7 +395,14 @@ def game_play(number, max_range, capacity, distance,
         print(
             "Task failed! "
             "Your cost is larger than profit.\n")
-    flying.flying()
+    cursor.execute("SELECT image from aircraft, user_aircraft, user "
+                   "WHERE user_aircraft.aircraft_id = aircraft.id "
+                   "AND user_aircraft.user_id = user.id "
+                   f"AND user_aircraft.id = {number}")
+    result = cursor.fetchone()
+    flying.flying(result)
+    cursor.close()
+    connection.close()
 
     if refuel_cost:
         print(
