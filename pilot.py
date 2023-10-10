@@ -400,7 +400,7 @@ def game_play(number, max_range, capacity, distance,
                    "AND user_aircraft.user_id = user.id "
                    f"AND user_aircraft.id = {number}")
     result = cursor.fetchone()
-    flying.flying(result)
+    flying.flying(result[0])
     cursor.close()
     connection.close()
 
