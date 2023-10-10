@@ -403,20 +403,31 @@ def game_play(number, max_range, capacity, distance,
     return True
 
 
-def store_main_interface():
-    connection = get_database_connection()
-    cursor = connection.cursor()
-    cursor.execute(
-        "SELECT id, name, passenger_capacity, "
-        "flight_range, price, carbon_emission FROM aircraft"
-        )
-    result = cursor.fetchall()
-    headers = ["id", "name", "passenger capacity", "flight range", "price", "carbon emission"]
-    table = tabulate(result, headers, tablefmt="grid")
-    print(table)
+def get_user_balance(cursor):
+    username = user_info['username']
+    sql = f"SELECT balance FROM user WHERE name = '{username}' LIMIT 1"
+    cursor.execute(sql)
+    return cursor.fetchone()[0]
 
 
-def store_menu(username):
+def get_planes_table(cursor):
+    cursor.execute("SELECT * FROM aircraft")
+    headers = cursor.column_names[1: -2]
+    headers = ['Number'] + [item.replace('_', ' ').title() for item in headers]
+    planes = cursor.fetchall()
+    result = [[num] + list(item[1: -2])
+                for num, item in enumerate(planes, 1)]
+    plane_table = tabulate(result, headers, tablefmt="grid")
+    return plane_table, planes
+
+
+def get_user_planes(cursor):
+    cursor.execute("SELECT aircraft_id FROM user_aircraft"
+                  f" WHERE user_id='{user_id}'")
+    user_plane_ids = [item[0] for item in cursor.fetchall()]
+    return user_plane_ids
+
+def store_menu():
     """
     Display all the planes on sale, include:
         - An ascii picture,
@@ -430,83 +441,73 @@ def store_menu(username):
     Display sub menu:
     (Store Menu: Enter the plane number to buy, or press Q. Go Back)
     """
+    username = user_info['username']
     connection = get_database_connection()
+    cursor = connection.cursor()
+    cursor.execute(
+        f"SELECT id FROM user WHERE name = '{username}' limit 1")
+    user_id = cursor.fetchone()[0]
+
+    plane_table, planes = get_planes_table(cursor)
 
     while True:
-        store_main_interface()
-        shop_menu_choice = input("For checking aircraft image and purchasing, please enter the aircraft's id.\n"
-                                 "For going back to the main menu, please press enter. ")
-        cursor = connection.cursor()
-        cursor.execute("SELECT balance FROM user "
-                       f"WHERE name = '{username}'")
-        current_balance = cursor.fetchone()[0]
-        print(f"Your current balance is {current_balance}.")
+        print(plane_table)
+        _balance = get_user_balance(cursor)
+        print(f"Current balance: {_balance}")
+
+        user_plane_ids = get_user_planes(cursor)
+
+        shop_menu_choice = input(
+            "For checking aircraft image and purchasing, please enter the "
+            "number of the aircraft.\n"
+            "For going back to the main menu, please press enter.")
+
         if not shop_menu_choice:
             break
+
+        if not shop_menu_choice.isdigit():
+            print("Invalid input, please enter 1 to {len(planes)}.")
+            continue
+
+        choice_num = int(shop_menu_choice)
+        if choice_num <= 0 or choice_num > len(planes):
+            print(f"Invalid input, please enter 1 to {len(planes)}.")
+            continue
+
+        _plane = planes[choice_num - 1]
+        _image = _plane[-2]
+        print(_image)
+
+        _choice = input("Buy(B) or Go back(Others)\n")
+        if _choice.lower() != 'b':
+            continue
+
+        aircraft_id = _plane[0]
+        if aircraft_id in user_plane_ids:
+            print("You already have this plane.")
+            continue
+
+        _price = float(_plane[4])
+        if _balance < _price:
+            print("You do not have enough balance.")
+            continue
+
+        new_balance = _balance - _price
         try:
-            aircraft_id = int(shop_menu_choice)
-            if aircraft_id > 0 and aircraft_id < 10:
-                cursor = connection.cursor()
-                cursor.execute("SELECT image FROM  aircraft WHERE id = %s", (aircraft_id,))
-                aircraft_image = cursor.fetchone()
-                for item in aircraft_image:
-                    print(item)
-                aircraft_action = input("1. purchase\n"
-                                        "2. Go back to store menu\n")
-                try:
-                    aircraft_choice = int(aircraft_action)
-                    if aircraft_choice == 1:
-                        cursor.execute("SELECT aircraft_id, user_id FROM user_aircraft"
-                                       " JOIN user ON user.id = user_aircraft.user_id"
-                                       f" WHERE name = '{username}'"
-                                       f" AND aircraft_id = {aircraft_id}")
-                        result = cursor.fetchone()
-                        aircraft_repository = None
-                        if result is not None:
-                            aircraft_repository = result[0]
-                            user_id = result[1]
-                            print("You already have this plane.")
-                        else:
+            cursor.execute(
+                "UPDATE user"
+                f" SET balance = {new_balance} "
+                f"WHERE id={user_id}")
 
-                            cursor.execute("SELECT price FROM aircraft"
-                                           f" WHERE id = {aircraft_id}")
-                            aircraft_price = float(cursor.fetchone()[0])
-                            if aircraft_price:
-                                cursor.execute("SELECT balance FROM user"
-                                               f" WHERE name = '{username}'")
-                                user_balance = float(cursor.fetchone()[0])
-                                if user_balance >= aircraft_price:
-                                    new_balance = user_balance - aircraft_price
-                                    cursor.execute("UPDATE user"
-                                                   f" SET balance = {new_balance} "
-                                                   f"WHERE name = '{username}'")
-                                    cursor.execute(f"SELECT id FROM user WHERE name = '{username}'")
-                                    user_id = cursor.fetchone()[0]
-                                    cursor.execute("INSERT INTO user_aircraft (user_id, aircraft_id) "
-                                                   f"VALUES ({user_id}, {aircraft_id})")
-                                    print("Congratulations, you have bought a new plane！")
-                                    print(f"Now, your balance is {new_balance}.")
-                                else:
-                                    print("You do not have enough balance.")
-                            else:
-                                print("Aircraft not found.")
-                    elif aircraft_choice == 2:
-                        continue
-                    else:
-                        print("Invalid input, please enter 1 or 2.")
-                except ValueError:
-                    print("Invalid input, please enter 1 or 2.")
-            else:
-                print("Aircraft not found.")
-        except ValueError:
-            print("Invalid input, please enter 1 to 9.")
+            cursor.execute(
+                "INSERT INTO user_aircraft (user_id, aircraft_id) "
+                f"VALUES ({user_id}, {aircraft_id})")
+            connection.commit()
+        except mysql.connector.Error as err:
+            print(err)
+            connection.rollback()
 
-
-
-
-
-
-    pass
+        print("Congratulations, you have bought a new plane！")
 
 
 def gallery_menu():
@@ -523,9 +524,6 @@ def gallery_menu():
     Display sub menu:
     (Gallery Menu: Press Q. Go Back)
     """
-    store_main_interface()
-
-
     pass
 
 
