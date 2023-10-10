@@ -214,7 +214,7 @@ def generate_new_task():
         carbon_cost = emission * 1.3
         fuel_cost = distance * 2.5
         total_cost = fuel_cost + carbon_cost
-        reward = (total_cost + 500) * random.randint(90, 120) / 100
+        reward = (int(total_cost) + 500) * random.randint(90, 120) / 100
         new_task = (start_airport["name"], destination_airport["name"],
                     distance, passenger, reward,
                     destination_airport["coords"][0])
@@ -379,7 +379,7 @@ def game_play(number, max_range, capacity, distance,
             "The number of passengers exceeds your plane's capacity.\n")
         return False
 
-    total_income = reward - total_cost
+    total_income = round(reward - total_cost, 1)
     if total_income > 0:
         try:
             cursor.execute(f"UPDATE user SET balance = balance + {total_income} "
