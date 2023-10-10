@@ -123,7 +123,7 @@ def menu():
         for key, value in menus.items():
             print(f"{key}. {value['name']}")
         number = input(
-            "Please choose the number in the menu to enter the corresFponding "
+            "Please choose the number in the menu to enter the corresponding "
             "section:"
         )
         if number in menus:
@@ -349,10 +349,7 @@ def game_play(number, max_range, capacity, distance,
     connection = get_database_connection()
     cursor = connection.cursor()
     cursor.execute(
-        "SELECT aircraft.carbon_emission FROM aircraft, user_aircraft, user "
-        "WHERE user_aircraft.aircraft_id = aircraft.id "
-        "AND user_aircraft.user_id = user.id "
-        f"AND user_aircraft.id = {number}")
+        f"SELECT carbon_emission FROM aircraft WHERE id = {number}")
     result = cursor.fetchone()
     carbon_coefficient = result[0]
 
@@ -395,10 +392,7 @@ def game_play(number, max_range, capacity, distance,
         print(
             "Task failed! "
             "Your cost is larger than profit.\n")
-    cursor.execute("SELECT image from aircraft, user_aircraft, user "
-                   "WHERE user_aircraft.aircraft_id = aircraft.id "
-                   "AND user_aircraft.user_id = user.id "
-                   f"AND user_aircraft.id = {number}")
+    cursor.execute(f"SELECT image from aircraft WHERE id = {number}")
     result = cursor.fetchone()
     flying.flying(result[0])
     cursor.close()
