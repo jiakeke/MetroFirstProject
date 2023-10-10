@@ -157,7 +157,8 @@ def menu():
         '2': {'name': 'Store', 'method': store_menu},
         '3': {'name': 'Aircraft Gallery', 'method': gallery_menu},
         '4': {'name': 'Ranking', 'method': ranking_menu},
-        '5': {'name': 'Quit', 'method': goodbye},
+        '5': {'name': 'Log out', 'method': login_or_register},
+        '6': {'name': 'Quit', 'method': goodbye}
     }
 
     while True:
@@ -165,7 +166,7 @@ def menu():
         for key, value in menus.items():
             print(f"{key}. {value['name']}")
         number = input(
-            "Please choose the number in the menu to enter the corresFponding "
+            "Please choose the number in the menu to enter the corresponding "
             "section:"
         )
         if number in menus:
@@ -350,7 +351,7 @@ def game_menu():
             "Please choose the plane number to complete the task"
             "\nR to refresh a new task"
             "\nQ to quit to menu\n"
-        )
+        ).upper()
         if number.isdigit() and 0 < int(number) <= len(user_aircraft):
             selected_aircraft_id = user_aircraft[int(number) - 1][0]
             # Start game
@@ -391,10 +392,7 @@ def game_play(number, max_range, capacity, distance,
     connection = get_database_connection()
     cursor = connection.cursor()
     cursor.execute(
-        "SELECT aircraft.carbon_emission FROM aircraft, user_aircraft, user "
-        "WHERE user_aircraft.aircraft_id = aircraft.id "
-        "AND user_aircraft.user_id = user.id "
-        f"AND user_aircraft.id = {number}")
+        f"SELECT carbon_emission FROM aircraft WHERE id = {number}")
     result = cursor.fetchone()
     carbon_coefficient = result[0]
 
@@ -437,10 +435,7 @@ def game_play(number, max_range, capacity, distance,
         print(
             "Task failed! "
             "Your cost is larger than profit.\n")
-    cursor.execute("SELECT image from aircraft, user_aircraft, user "
-                   "WHERE user_aircraft.aircraft_id = aircraft.id "
-                   "AND user_aircraft.user_id = user.id "
-                   f"AND user_aircraft.id = {number}")
+    cursor.execute(f"SELECT image from aircraft WHERE id = {number}")
     result = cursor.fetchone()
     flying(result[0])
     cursor.close()
