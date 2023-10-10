@@ -115,7 +115,7 @@ def menu():
         '2': {'name': 'Store', 'method': store_menu},
         '3': {'name': 'Aircraft Gallery', 'method': gallery_menu},
         '4': {'name': 'Ranking', 'method': ranking_menu},
-        '5': {'name': 'Quit', 'method': byebye},
+        '5': {'name': 'Quit', 'method': goodbye},
     }
 
     while True:
@@ -547,7 +547,7 @@ def ranking_menu():
     pass
 
 
-def byebye():
+def goodbye():
     """
     Display a goodbye message and end the process.
     """
@@ -561,7 +561,7 @@ def play():
     if user_info['username']:
         menu()
     else:
-        byebye()
+        goodbye()
 
 
 def run_command(cmd):
