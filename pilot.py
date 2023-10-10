@@ -632,7 +632,7 @@ def gallery_menu():
         print(plane_table)
         choice = input("For checking aircraft image and purchasing, "
                        "please enter the number of the aircraft.\n "
-                       "For going back to the main menu, please enter Q."
+                       "For going back to the main menu, please enter Q.\n"
                        ).upper()
         if choice == "Q":
             break
@@ -715,6 +715,3 @@ cmds_map = {
 
 if __name__ == "__main__":
     main()
-
-
-
