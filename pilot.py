@@ -115,7 +115,8 @@ def menu():
         '2': {'name': 'Store', 'method': store_menu},
         '3': {'name': 'Aircraft Gallery', 'method': gallery_menu},
         '4': {'name': 'Ranking', 'method': ranking_menu},
-        '5': {'name': 'Quit', 'method': goodbye},
+        '5': {'name': 'Log out', 'method': login_or_register},
+        '6': {'name': 'Quit', 'method': goodbye}
     }
 
     while True:
