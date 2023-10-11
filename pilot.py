@@ -18,6 +18,7 @@ import random
 
 from flying import flying, clear_screen
 from tabulate import tabulate
+from colorama import Fore, Style
 
 program = os.path.basename(sys.argv[0])
 
@@ -78,7 +79,7 @@ def print_header():
     print_lines(f"{'#'*10} {game_name} {'#'*10}")
 
 def print_title(text):
-    print_lines(f"{'='*10} {text} {'='*10}")
+    print_lines(f"{'='*10} {text.title()} {'='*10}")
 
 def print_msg(text):
     print_lines(text)
@@ -661,7 +662,31 @@ def ranking_menu():
     Display sub menu:
     (Ranking Menu: Press Q. Go Back)
     """
-    pass
+    while True:
+        print_header()
+        username = user_info['username']
+        connection = get_database_connection()
+        cursor = connection.cursor()
+        cursor.execute("SELECT name, total_amount FROM user "
+                       "ORDER BY total_amount DESC")
+        result = cursor.fetchall()
+        ranking_header = cursor.column_names
+        ranking_header = ["Ranking"] + [item.replace("_", " ").title()
+                                        for item in ranking_header]
+        content = []
+        for num, item in enumerate(result, 1):
+            row = [num] + list(item)
+            _row = row
+            if item[0] == username:
+                _row = [Fore.BLUE + Style.BRIGHT + str(cell) + Style.RESET_ALL for
+                                      cell in row]
+            content.append(_row)
+        ranking_table = tabulate(content, ranking_header, tablefmt="grid")
+        print_title('ranking')
+        print(ranking_table)
+        choice = input("Press enter to go back to the main menu.")
+        if not choice:
+            break
 
 
 def goodbye():
