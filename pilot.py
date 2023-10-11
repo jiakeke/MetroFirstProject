@@ -72,21 +72,28 @@ def print_lines(text):
 
 def print_cover():
     clear_screen()
-    print_lines(game_name_ascii)
+    print_lines(highlight(game_name_ascii, Fore.MAGENTA))
 
 def print_header():
     clear_screen()
-    print_lines(f"{'#'*10} {game_name} {'#'*10}")
+    print_lines(highlight(f"{'#'*10} {game_name} {'#'*10}", Fore.MAGENTA))
 
 def print_title(text):
-    print_lines(f"{'='*10} {text.title()} {'='*10}")
+    print_lines(highlight(f"{'='*10} {text.title()} {'='*10}", Fore.CYAN))
 
 def print_msg(text):
-    print_lines(text)
+    print_lines(highlight(text, Fore.YELLOW))
+
+def print_input(text):
+    return input(highlight(text, Fore.WHITE))
+
+def highlight(text, color=Fore.BLUE):
+    highlight_text = color + Style.BRIGHT + str(text) + Style.RESET_ALL
+    return highlight_text
 
 def delayed_back(text, waiting=5):
-    print(text)
-    input('Press the Enter key to continue...')
+    print_msg(text)
+    print_input('Press the Enter key to continue...')
 
 def get_database_connection():
     connection = mysql.connector.connect(
@@ -116,8 +123,8 @@ def login_or_register():
 
     while True:
         print_title('Login OR Register')
-        username = input("Username: ")
-        password = input("Password: ")
+        username = print_input("Username: ")
+        password = print_input("Password: ")
 
         cursor.execute(f"SELECT password FROM user WHERE name = '{username}'")
         result = cursor.fetchone()
@@ -134,7 +141,7 @@ def login_or_register():
             else:
                 print("Incorrect password. Please try again.")
         else:
-            user_choice = input("Username Not Found. "
+            user_choice = print_input("Username Not Found. "
                                 "Do you want to register?"
                                 "(\nEnter yes to register, "
                                 "any other to login again):\n")
@@ -190,7 +197,7 @@ def menu():
         for key, value in menus.items():
             print(f"{key}. {value['name']}")
         print()
-        number = input(
+        number = print_input(
             "Please select the item number from the menu: \n"
         )
         if number in menus:
@@ -361,24 +368,24 @@ def game_menu():
         else:
             game_props = generate_new_task()
 
-        print(f"Fly from [{game_props[0]}] to [{game_props[1]}];")
-        print(f"Distance: [{game_props[2]} km];")
-        print(f"Passengers: [{game_props[3]}];")
-        print(f"Offer: [{game_props[4]} coins].")
+        print(f"Fly from {highlight(game_props[0])} to {highlight(game_props[1])};")
+        print(f"Distance: {highlight(game_props[2])} km;")
+        print(f"Passengers: {highlight(game_props[3])};")
+        print(f"Offer: {highlight(game_props[4])} coins.")
         print()
-        print("Tip: Destination weather may affect flight costs.")
-        print("     Refuel cost is 50 coins each time.")
+        print_msg("Tip: Destination weather may affect flight costs.")
+        print_msg("     Refuel cost is 50 coins each time.")
         print()
         print_title('Actions')
         user_aircraft = get_user_aircraft(user_info['username'])
         for idx, aircraft in enumerate(user_aircraft, 1):
             print(
-                f"{idx}. [{aircraft[1]}] "
-                f"- Range: [{aircraft[2]}] km "
-                f"- Capacity: [{aircraft[3]}] passengers")
+                f"{idx}. {highlight(aircraft[1])} "
+                f"- Range: {highlight(aircraft[2])} km "
+                f"- Capacity: {highlight(aircraft[3])} passengers")
 
         print()
-        number = input(
+        number = print_input(
             "Please choose the plane number to complete the task"
             "\n\nR to refresh a new task"
             "\n\nQ to quit to menu\n"
@@ -539,7 +546,7 @@ def store_menu():
                       f" WHERE user_id='{user_id}'")
         user_plane_ids = [item[0] for item in cursor.fetchall()]
 
-        shop_menu_choice = input(
+        shop_menu_choice = print_input(
             "For checking aircraft image and purchasing, please enter the "
             "number of the aircraft.\n"
             "For going back to the main menu, please press enter.")
@@ -563,7 +570,7 @@ def store_menu():
         _image = _plane[-2]
         print_msg(_image)
 
-        _choice = input("Press B to buy the plane or any other to go back\n")
+        _choice = print_input("Press B to buy the plane or any other to go back\n")
         if _choice.lower() != 'b':
             continue
 
@@ -632,7 +639,7 @@ def gallery_menu():
         print("========== Gallery ==========")
         print()
         print(plane_table)
-        choice = input("For checking aircraft image and purchasing, "
+        choice = print_input("For checking aircraft image and purchasing, "
                        "please enter the number of the aircraft.\n "
                        "For going back to the main menu, please enter Q.\n"
                        ).upper()
@@ -644,8 +651,8 @@ def gallery_menu():
                 print_header()
                 _plane = result[choice - 1]
                 _image = _plane[-1]
-                print(_image)
-                _choice = input("Press enter to go back\n")
+                print_msg(_image)
+                _choice = print_input("Press enter to go back\n")
             else:
                 print(f"Invalid input, please enter 1 to {len(result)}.")
 
@@ -677,16 +684,14 @@ def ranking_menu():
         content = []
         for num, item in enumerate(result, 1):
             row = [num] + list(item)
-            content.append(row)
+            _row = row
             if item[0] == username:
-                user_row = row
-                user_row_formatted = [Fore.BLUE + Style.BRIGHT + str(cell) + Style.RESET_ALL for
-                                      idx, cell in enumerate(user_row)]
-                content[content.index(user_row)] = user_row_formatted
+                _row = [highlight(cell) for cell in row]
+            content.append(_row)
         ranking_table = tabulate(content, ranking_header, tablefmt="grid")
         print_title('ranking')
         print(ranking_table)
-        choice = input("Press enter to go back to the main menu.")
+        choice = print_input("Press enter to go back to the main menu.")
         if not choice:
             break
 
@@ -695,7 +700,7 @@ def goodbye():
     """
     Display a goodbye message and end the process.
     """
-    print("Goodbye!")
+    print_msg("Goodbye!")
     exit()
 
 
