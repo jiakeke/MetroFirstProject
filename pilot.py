@@ -79,7 +79,7 @@ def print_header():
     print_lines(f"{'#'*10} {game_name} {'#'*10}")
 
 def print_title(text):
-    print_lines(f"{'='*10} {text} {'='*10}")
+    print_lines(f"{'='*10} {text.title()} {'='*10}")
 
 def print_msg(text):
     print_lines(text)
