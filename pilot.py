@@ -673,16 +673,14 @@ def ranking_menu():
         ranking_header = cursor.column_names
         ranking_header = ["Ranking"] + [item.replace("_", " ").title()
                                         for item in ranking_header]
-        user_row = None
         content = []
         for num, item in enumerate(result, 1):
             row = [num] + list(item)
-            content.append(row)
+            _row = row
             if item[0] == username:
-                user_row = row
-                user_row_formatted = [Fore.BLUE + Style.BRIGHT + str(cell) + Style.RESET_ALL for
-                                      idx, cell in enumerate(user_row)]
-                content[content.index(user_row)] = user_row_formatted
+                _row = [Fore.BLUE + Style.BRIGHT + str(cell) + Style.RESET_ALL for
+                                      cell in row]
+            content.append(_row)
         ranking_table = tabulate(content, ranking_header, tablefmt="grid")
         print_title('ranking')
         print(ranking_table)
