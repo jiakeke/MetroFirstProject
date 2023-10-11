@@ -673,24 +673,18 @@ def ranking_menu():
         ranking_header = cursor.column_names
         ranking_header = ["Ranking"] + [item.replace("_", " ").title()
                                         for item in ranking_header]
-        content = [[num] + list(item) for num, item in
-                   enumerate(result, 1)]
-        ranking_table = tabulate(content, ranking_header, tablefmt="grid")
         user_row = None
+        content = []
         for num, item in enumerate(result, 1):
             row = [num] + list(item)
             content.append(row)
             if item[0] == username:
                 user_row = row
-        if user_row:
-            user_row_formatted = [Fore.BLUE + Style.BRIGHT + str(cell) + Style.RESET_ALL for
-                                  idx, cell in enumerate(user_row)]
-            content[content.index(user_row)] = user_row_formatted
-
+                user_row_formatted = [Fore.BLUE + Style.BRIGHT + str(cell) + Style.RESET_ALL for
+                                      idx, cell in enumerate(user_row)]
+                content[content.index(user_row)] = user_row_formatted
         ranking_table = tabulate(content, ranking_header, tablefmt="grid")
-        print()
-        print("========== Ranking ==========")
-        print()
+        print_title('ranking')
         print(ranking_table)
         choice = input("Press enter to go back to the main menu.")
         if not choice:
