@@ -635,9 +635,7 @@ def gallery_menu():
         content = [[num] + list(item[: -1]) for num, item in
                    enumerate(result, 1)]
         plane_table = tabulate(content, headers, tablefmt="grid")
-        print()
-        print("========== Gallery ==========")
-        print()
+        print_title("Gallery")
         print(plane_table)
         choice = print_input("For checking aircraft image and purchasing, "
                        "please enter the number of the aircraft.\n "
@@ -680,7 +678,6 @@ def ranking_menu():
         ranking_header = cursor.column_names
         ranking_header = ["Ranking"] + [item.replace("_", " ").title()
                                         for item in ranking_header]
-        user_row = None
         content = []
         for num, item in enumerate(result, 1):
             row = [num] + list(item)
