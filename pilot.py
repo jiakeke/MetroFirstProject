@@ -628,9 +628,7 @@ def gallery_menu():
         content = [[num] + list(item[: -1]) for num, item in
                    enumerate(result, 1)]
         plane_table = tabulate(content, headers, tablefmt="grid")
-        print()
-        print("========== Gallery ==========")
-        print()
+        print_title("Gallery")
         print(plane_table)
         choice = input("For checking aircraft image and purchasing, "
                        "please enter the number of the aircraft.\n "
