@@ -489,8 +489,8 @@ def game_play(number, max_range, capacity, distance,
     print(f"You encountered {weather_index[0]} weather "
           "at your destination airport")
     print(
-        f"Task successful!\nYou earned: {total_income}\n"
-        f"Total cost was: {total_cost}\n")
+        f"Task successful!\nYou earned: {total_income:.1f}\n"
+        f"Total cost was: {total_cost:.1f}\n")
     return True
 
 
