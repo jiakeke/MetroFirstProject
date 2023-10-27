@@ -4,6 +4,15 @@ The group project for the first semester of Metropolia
 
 ## INSTALL
 
+* Virtual Environment
+    It is recommended to use a `virtualenv` for installation, which is helpful for isolating dependency packages between projects.
+    ```
+    pip install virtualenv
+    virtualenv my_env
+    source my_env/bin/activate
+    ```
+    Then you can install the package in a virtual environment dedicated to this project.
+
 * Dependent software packages installation
     ```
     pip install -r requirements.txt
