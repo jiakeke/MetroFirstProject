@@ -1,7 +1,13 @@
 # MetroFirstProject
+
 The group project for the first semester of Metropolia
 
 ## INSTALL
+
+* Dependent software packages installation
+    ```
+    pip install -r requirements.txt
+    ```
 
 * Rename `config.py.example` to `config.py`, set db_user, db_pass inside it to overwrite the variables in pilot.py.
     ```
@@ -19,8 +25,4 @@ The group project for the first semester of Metropolia
     python pilot.py play
     ```
 
-* Install tabulate:
-    ```
-    pip install tabulate
-    ```
 
